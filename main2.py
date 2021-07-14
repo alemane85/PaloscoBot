@@ -7,37 +7,53 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeybo
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
 
 """
-This will handle all the callback input
+MESSAGGIO INIZIALE ATTIVATO DA /start
+"""
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    a = types.InlineKeyboardButton(text="MESCOLA ", callback_data="MESCOLA")
+    b = types.InlineKeyboardButton(text="LASTRA", callback_data="LASTRA")
+    c = types.InlineKeyboardButton(text="LASTRINE", callback_data="LASTRINE")
+    keyboard.add(a, b, c)
+    bot.send_message(chat_id=message.chat.id, text="Cosa hai prodottto?", reply_markup=keyboard)
+
+"""
+MESSAGGIO DI HELP ATTIVATO DA /help
+"""
+@bot.message_handler(commands=['help'])
+def send_welcome(message):
+    bot.reply_to(message, "Help in fase di costruzione")
+
+
+
+"""
+GESTIONE DI TUTTE LE CALLBACK GENRATE DALLA PRESSIONE DI UN TASTO SULLA
+InlineKeyboardMarkup
 """
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     if call.message:
-        if call.data == "1":
+        if call.data == "MESCOLA":
             keyboard = types.InlineKeyboardMarkup(row_width=3)
-            a = types.InlineKeyboardButton(text=" ", callback_data="2")
-            b = types.InlineKeyboardButton(text=" ", callback_data="2")
-            c = types.InlineKeyboardButton(text=" ", callback_data="2")
-            d = types.InlineKeyboardButton(text=" ", callback_data="2")
-            e = types.InlineKeyboardButton(text=" ", callback_data="2")
-            f = types.InlineKeyboardButton(text=" ", callback_data="2")
-            g = types.InlineKeyboardButton(text=" ", callback_data="2")
-            h = types.InlineKeyboardButton(text=" ", callback_data="2")
-            i = types.InlineKeyboardButton(text=" ", callback_data="2")
-            keyboard.add(a, b, c, d, e, f, g, h, i)
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="X", reply_markup=keyboard)
-        if call.data == "2":
+            a = types.InlineKeyboardButton(text="160", callback_data="160")
+            b = types.InlineKeyboardButton(text="200", callback_data="200")
+            c = types.InlineKeyboardButton(text="250", callback_data="250")
+            d = types.InlineKeyboardButton(text="300", callback_data="300")
+            e = types.InlineKeyboardButton(text="350", callback_data="350")
+            f = types.InlineKeyboardButton(text="400", callback_data="400")
+            keyboard.add(a, b, c, d, e, f)
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="DENSITA' MESCOLA?", reply_markup=keyboard)
+        if call.data == "160":
             keyboard = types.InlineKeyboardMarkup(row_width=3)
-            a = types.InlineKeyboardButton(text="X", callback_data="3")
-            b = types.InlineKeyboardButton(text=" ", callback_data="3")
-            c = types.InlineKeyboardButton(text=" ", callback_data="3")
-            d = types.InlineKeyboardButton(text=" ", callback_data="3")
-            e = types.InlineKeyboardButton(text=" ", callback_data="3")
-            f = types.InlineKeyboardButton(text=" ", callback_data="3")
-            g = types.InlineKeyboardButton(text=" ", callback_data="3")
-            h = types.InlineKeyboardButton(text=" ", callback_data="3")
-            i = types.InlineKeyboardButton(text=" ", callback_data="3")
-            keyboard.add(a, b, c, d, e, f, g, h, i)
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="0", reply_markup=keyboard)
+            a = types.InlineKeyboardButton(text="FF", callback_data="3")
+            b = types.InlineKeyboardButton(text="F", callback_data="3")
+            c = types.InlineKeyboardButton(text="MF", callback_data="3")
+            d = types.InlineKeyboardButton(text="M", callback_data="3")
+            e = types.InlineKeyboardButton(text="MG", callback_data="3")
+            f = types.InlineKeyboardButton(text="G", callback_data="3")
+            keyboard.add(a, b, c, d, e, f)
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="POROSITA' MESCOLA?", reply_markup=keyboard)
         if call.data == "3":
             keyboard = types.InlineKeyboardMarkup(row_width=3)
             a = types.InlineKeyboardButton(text=" ", callback_data="1")
@@ -52,6 +68,9 @@ def callback_inline(call):
             keyboard.add(a, b, c, d, e, f, g, h, i)
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="X", reply_markup=keyboard)
 
+"""
+COMMENTATO PERCHE' NON UTLIZZATO
+
 @bot.callback_query_handler(func=lambda call: "id_azione_1" == call.data)
 def azione1(message):
     #print(message)
@@ -62,12 +81,6 @@ def azione1(message):
 def azione2(message):
     #print(message)
     bot.send_message(message.message.chat.id, "Hai tappato l'azione 2")
-
-
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    bot.reply_to(message, "Howdy, how are you doing?")
-
 
 @bot.message_handler(commands=['keyboard'])
 def keyboard(message):
@@ -99,7 +112,8 @@ def fun_generale(message):
         bot.reply_to(message, "Si mi chiamo Angelo")
     else:
         bot.reply_to(message, "No, non mi chiamo cosi")
-
+"""
 
 if __name__ == '__main__':
     bot.polling()
+    print("BOT PARTITO")
