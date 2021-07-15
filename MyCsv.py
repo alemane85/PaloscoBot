@@ -82,7 +82,7 @@ class MyCsvFile:
                     if not element in self.dict_filter[self.fields[i]]:
                         self.dict_filter[self.fields[i]].append(element)
                     i+=1
-            print(self)
+            """Ordina il dizionario di supporto come filtro"""
             for key in self.dict_filter.keys():
                 self.dict_filter[key].sort()
             return True
