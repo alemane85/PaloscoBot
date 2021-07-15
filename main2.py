@@ -1,10 +1,17 @@
 import os
-
 import telebot
 from telebot import types
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+import MyCsv
+import mymodule
 
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
+art_lastrine= MyCsv.MyCsvFile()
+art_lastrine.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\ART-LASTRINA.txt")
+print(art_lastrine)
+my_art_index=mymodule.art_index()
+my_art_index.create_index(art_lastrine)
+print(my_art_index)
 
 """
 MESSAGGIO INIZIALE ATTIVATO DA /start
@@ -16,7 +23,8 @@ def send_welcome(message):
     b = types.InlineKeyboardButton(text="LASTRA", callback_data="LASTRA")
     c = types.InlineKeyboardButton(text="LASTRINE", callback_data="LASTRINE")
     keyboard.add(a, b, c)
-    bot.send_message(chat_id=message.chat.id, text="Cosa hai prodottto?", reply_markup=keyboard)
+    name = message.from_user.username
+    bot.send_message(chat_id=message.chat.id, text=f"Ciao {name} Cosa hai prodotto?", reply_markup=keyboard)
 
 """
 MESSAGGIO DI HELP ATTIVATO DA /help
@@ -34,7 +42,7 @@ InlineKeyboardMarkup
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     if call.message:
-        if call.data == "MESCOLA":
+        if call.data == "LASTRINE":
             keyboard = types.InlineKeyboardMarkup(row_width=3)
             a = types.InlineKeyboardButton(text="160", callback_data="160")
             b = types.InlineKeyboardButton(text="200", callback_data="200")
