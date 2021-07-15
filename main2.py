@@ -3,28 +3,29 @@ import telebot
 from telebot import types
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 import MyCsv
-import mymodule
 
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
 art_lastrine= MyCsv.MyCsvFile()
 art_lastrine.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\ART-LASTRINA.txt")
+art_lastrine.Create_dictionary()
 print(art_lastrine)
-my_art_index=mymodule.art_index()
-my_art_index.create_index(art_lastrine)
-print(my_art_index)
 
 """
 MESSAGGIO INIZIALE ATTIVATO DA /start
 """
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
+def cut_routine_start(message):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
-    a = types.InlineKeyboardButton(text="MESCOLA ", callback_data="MESCOLA")
-    b = types.InlineKeyboardButton(text="LASTRA", callback_data="LASTRA")
-    c = types.InlineKeyboardButton(text="LASTRINE", callback_data="LASTRINE")
-    keyboard.add(a, b, c)
+    button_list=[]
+    print(art_lastrine.dict_filter['COLORE'])
+    for element in art_lastrine.dict_filter['COLORE']:
+        print(element)
+        keyboard.add(types.InlineKeyboardButton(text=element, callback_data=element))
+    #a = types.InlineKeyboardButton(text="MESCOLA ", callback_data="MESCOLA")
+    #b = types.InlineKeyboardButton(text="LASTRA", callback_data="LASTRA")
+    #c = types.InlineKeyboardButton(text="LASTRINA", callback_data="LASTRINA")
     name = message.from_user.username
-    bot.send_message(chat_id=message.chat.id, text=f"Ciao {name} Cosa hai prodotto?", reply_markup=keyboard)
+    bot.send_message(chat_id=message.chat.id, text=f"Ciao {name} Cosa hai prodotto?",reply_markup=keyboard)
 
 """
 MESSAGGIO DI HELP ATTIVATO DA /help
@@ -42,7 +43,10 @@ InlineKeyboardMarkup
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     if call.message:
-        if call.data == "LASTRINE":
+        call_list=call.data.split('-')
+        for call_element in call_list:
+            pass
+        if call.data == "LASTRINA":
             keyboard = types.InlineKeyboardMarkup(row_width=3)
             a = types.InlineKeyboardButton(text="160", callback_data="160")
             b = types.InlineKeyboardButton(text="200", callback_data="200")
