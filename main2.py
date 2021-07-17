@@ -3,6 +3,7 @@ import telebot
 from telebot import types
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 import MyCsv
+from datetime import datetime
 
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
 art_lastrine= MyCsv.MyCsvFile()
@@ -14,16 +15,10 @@ print(art_lastrine)
 MESSAGGIO INIZIALE ATTIVATO DA /start
 """
 @bot.message_handler(commands=['start'])
-def cut_routine_start(message):
+def start(message):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
-    button_list=[]
-    print(art_lastrine.dict_filter['COLORE'])
-    for element in art_lastrine.dict_filter['COLORE']:
-        print(element)
-        keyboard.add(types.InlineKeyboardButton(text=element, callback_data=element))
-    #a = types.InlineKeyboardButton(text="MESCOLA ", callback_data="MESCOLA")
-    #b = types.InlineKeyboardButton(text="LASTRA", callback_data="LASTRA")
-    #c = types.InlineKeyboardButton(text="LASTRINA", callback_data="LASTRINA")
+    keyboard.add(types.InlineKeyboardButton(text='MESCOLA', callback_data='MESCOLA'))
+    keyboard.add(types.InlineKeyboardButton(text='TAGLIO', callback_data='TAGLIO'))
     name = message.from_user.username
     bot.send_message(chat_id=message.chat.id, text=f"Ciao {name} Cosa hai prodotto?",reply_markup=keyboard)
 
@@ -41,6 +36,31 @@ GESTIONE DI TUTTE LE CALLBACK GENRATE DALLA PRESSIONE DI UN TASTO SULLA
 InlineKeyboardMarkup
 """
 @bot.callback_query_handler(func=lambda call: True)
+def routine_start(call):
+    name = call.from_user.username
+    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    print(f"{time} | User: {name} -> {call.data}")
+    call_list=call.data.split('-')
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    button_list=[]
+    new_text="CACCA"
+    if call_list[0]=="TAGLIO":
+        if len(call_list)==1:
+            for element in art_lastrine.dict_filter.keys():
+                keyboard.add(types.InlineKeyboardButton(text=element, callback_data=f"{call.data}-{element}"))
+            new_text=f"{name} Filtra per:"
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=new_text,reply_markup=keyboard)
+
+"""    print(art_lastrine.dict_filter['COLORE'])
+    for element in art_lastrine.dict_filter['COLORE']:
+        print(element)
+        keyboard.add(types.InlineKeyboardButton(text=element, callback_data=element))
+    #a = types.InlineKeyboardButton(text="MESCOLA ", callback_data="MESCOLA")
+    #b = types.InlineKeyboardButton(text="LASTRA", callback_data="LASTRA")
+    #c = types.InlineKeyboardButton(text="LASTRINA", callback_data="LASTRINA")"""
+
+"""
+
 def callback_inline(call):
     if call.message:
         call_list=call.data.split('-')
@@ -80,7 +100,6 @@ def callback_inline(call):
             keyboard.add(a, b, c, d, e, f, g, h, i)
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="X", reply_markup=keyboard)
 
-"""
 COMMENTATO PERCHE' NON UTLIZZATO
 
 @bot.callback_query_handler(func=lambda call: "id_azione_1" == call.data)
