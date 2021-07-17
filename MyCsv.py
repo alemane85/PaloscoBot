@@ -4,6 +4,7 @@ MyCsv.py
 
 import os
 import csv
+import MyTab
 
 
 """
@@ -34,8 +35,7 @@ class MyCsvFile:
         self.name=""
         self.fields=[]
         self.rows=[]
-        self.dictionary={}
-        self.dict_filter={}
+        self.dictionary=MyTab.MyTab()
         self.delimiter=","
         self.quotechar=''
         self.quoting=csv.QUOTE_NONE
@@ -59,35 +59,13 @@ class MyCsvFile:
                 string+=f"\nrow[{i}]={row}"
                 i+=1
             i=0
-        for key in self.dictionary.keys():
-            string+=f"\ndictionary[{key}]={self.dictionary[key]}"
-        for key in self.dict_filter.keys():
-            string+=f"\ndict_filter[{key}]={self.dict_filter[key]}"
+        string+=str(self.dictionary)
         string+=f"\ndelimiter={self.delimiter}"
         string+=f"\nquotechar={self.quotechar}"
         string+=f"\nquoting={self.quoting}"
         string+=f"\nescapechar={self.escapechar}"
         string+=f"\nerror={self.error}"
         return string
-
-    """
-    Crea un dizionario sulla base del file csv caricato con dizionario di supporto come filtro
-    """
-    def Create_dictionary(self):
-        if self.fields and self.rows and self.error==0:
-            for row in self.rows:
-                i=0
-                for element in row:
-                    self.dictionary[self.fields[i]].append(element)
-                    if not element in self.dict_filter[self.fields[i]]:
-                        self.dict_filter[self.fields[i]].append(element)
-                    i+=1
-            """Ordina il dizionario di supporto come filtro"""
-            for key in self.dict_filter.keys():
-                self.dict_filter[key].sort()
-            return True
-        else:
-            return False
 
     """
     Compara i fields con la prima riga del reader assicurarsi che sia il csv adatto
@@ -144,9 +122,7 @@ class MyCsvFile:
                 self.fields=next(reader)
                 for row in reader:
                     self.rows.append(row)
-                for index in self.fields:
-                    self.dictionary[index]=[]
-                    self.dict_filter[index]=[]
+                self.dictionary.create(self.fields,self.rows)
         except Exception as this_error:
             self.error=type(this_error).__name__
             return False

@@ -6,10 +6,11 @@ import MyCsv
 from datetime import datetime
 
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
-art_lastrine= MyCsv.MyCsvFile()
-art_lastrine.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\ART-LASTRINA.txt")
-art_lastrine.Create_dictionary()
-print(art_lastrine)
+cutting_file= MyCsv.MyCsvFile()
+cutting_file.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\ART-LASTRINA.txt")
+print(cutting_file)
+new_dict=cutting_file.dictionary.filter_by("CODICE","L161B0")
+print(new_dict)
 
 """
 MESSAGGIO INIZIALE ATTIVATO DA /start
@@ -46,13 +47,13 @@ def routine_start(call):
     new_text="CACCA"
     if call_list[0]=="TAGLIO":
         if len(call_list)==1:
-            for element in art_lastrine.dict_filter.keys():
+            for element in cutting_file.dict_filter.keys():
                 keyboard.add(types.InlineKeyboardButton(text=element, callback_data=f"{call.data}-{element}"))
             new_text=f"{name} Filtra per:"
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=new_text,reply_markup=keyboard)
 
-"""    print(art_lastrine.dict_filter['COLORE'])
-    for element in art_lastrine.dict_filter['COLORE']:
+"""    print(cutting_file.dict_filter['COLORE'])
+    for element in cutting_file.dict_filter['COLORE']:
         print(element)
         keyboard.add(types.InlineKeyboardButton(text=element, callback_data=element))
     #a = types.InlineKeyboardButton(text="MESCOLA ", callback_data="MESCOLA")
