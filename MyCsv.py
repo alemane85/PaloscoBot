@@ -35,7 +35,7 @@ class MyCsvFile:
         self.name=""
         self.fields=[]
         self.rows=[]
-        self.dictionary=MyTab.MyTab()
+        self.tab=MyTab.MyTab()
         self.delimiter=","
         self.quotechar=''
         self.quoting=csv.QUOTE_NONE
@@ -59,7 +59,7 @@ class MyCsvFile:
                 string+=f"\nrow[{i}]={row}"
                 i+=1
             i=0
-        string+=str(self.dictionary)
+        string+=str(self.tab)
         string+=f"\ndelimiter={self.delimiter}"
         string+=f"\nquotechar={self.quotechar}"
         string+=f"\nquoting={self.quoting}"
@@ -122,7 +122,7 @@ class MyCsvFile:
                 self.fields=next(reader)
                 for row in reader:
                     self.rows.append(row)
-                self.dictionary.create(self.fields,self.rows)
+                self.tab.create(self.fields,self.rows)
         except Exception as this_error:
             self.error=type(this_error).__name__
             return False

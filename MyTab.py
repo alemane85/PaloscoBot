@@ -84,3 +84,10 @@ class MyTab():
         new_tab=MyTab()
         new_tab.create(new_fields,new_rows)
         return new_tab
+
+    """
+    Restituisce un nuovo dizionario MyTab filtrato sulla base di key e value
+    """
+    def rows_number(self):
+        lastkey=list(self.dictionary.keys())[-1]
+        return len(self.dictionary[lastkey])
