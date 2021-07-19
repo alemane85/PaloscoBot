@@ -5,6 +5,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeybo
 import MyCsv
 from datetime import datetime
 
+"""VARIABILI GLOBALI"""
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
 cutting_file= MyCsv.MyCsvFile()
 cutting_file.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\ART-LASTRINA.txt")
@@ -87,7 +88,7 @@ def next_filter(call,tab,selection):
     passiamo a definire la quantità"""
     if filtered_tab.rows_number()==1:
         keyboard = types.InlineKeyboardMarkup(row_width=1)
-        keyboard.add(types.InlineKeyboardButton(text="✅ CONFERMA", callback_data="QUANTITA=[0]"))
+        keyboard.add(types.InlineKeyboardButton(text="✅ CONFERMA", callback_data="QUANTITA=0"))
         keyboard.add(types.InlineKeyboardButton(text="↪️ INDIETRO", callback_data="[BACK]"))
         art=""
         for key in filtered_tab.dictionary.keys():
@@ -121,6 +122,38 @@ def go_back(data):
     string="-".join(list)
     return string
 
+def quantity_menu(call):
+    name = call.from_user.username
+    duo=call.data.split("=")
+    value=int(duo[1])
+    keyboard = types.InlineKeyboardMarkup()
+    button_list=[]
+    button_list.append(types.InlineKeyboardButton(text='-1', callback_data=f"{duo[0]}={str(value-1)}"))
+    button_list.append(types.InlineKeyboardButton(text='+1', callback_data=f"{duo[0]}={str(value+1)}"))
+    keyboard.add(button_list[0],button_list[1])
+    button_list=[]
+    button_list.append(types.InlineKeyboardButton(text='-5', callback_data=f"{duo[0]}={str(value-5)}"))
+    button_list.append(types.InlineKeyboardButton(text='+5', callback_data=f"{duo[0]}={str(value+5)}"))
+    keyboard.add(button_list[0],button_list[1])
+    button_list=[]
+    button_list.append(types.InlineKeyboardButton(text='-10', callback_data=f"{duo[0]}={str(value-10)}"))
+    button_list.append(types.InlineKeyboardButton(text='+10', callback_data=f"{duo[0]}={str(value+10)}"))
+    keyboard.add(button_list[0],button_list[1])
+    button_list=[]
+    button_list.append(types.InlineKeyboardButton(text='-50', callback_data=f"{duo[0]}={str(value-50)}"))
+    button_list.append(types.InlineKeyboardButton(text='+50', callback_data=f"{duo[0]}={str(value+50)}"))
+    keyboard.add(button_list[0],button_list[1])
+    button_list=[]
+    button_list.append(types.InlineKeyboardButton(text='-100', callback_data=f"{duo[0]}={str(value-100)}"))
+    button_list.append(types.InlineKeyboardButton(text='+100', callback_data=f"{duo[0]}={str(value+100)}"))
+    keyboard.add(button_list[0],button_list[1])
+    button_list=[]
+    button_list.append(types.InlineKeyboardButton(text='-500', callback_data=f"{duo[0]}={str(value-500)}"))
+    button_list.append(types.InlineKeyboardButton(text='+500', callback_data=f"{duo[0]}={str(value+500)}"))
+    keyboard.add(button_list[0],button_list[1])
+    keyboard.add(types.InlineKeyboardButton(text="✅ CONFERMA", callback_data=f"CONFERMATO={str(value)}"))
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Ciao {name} hai prodotto: {str(value)}",reply_markup=keyboard)
+
 """
 GESTIONE DI TUTTE LE CALLBACK GENERATE DALLA PRESSIONE DI UN TASTO SULLA
 InlineKeyboardMarkup
@@ -128,25 +161,31 @@ InlineKeyboardMarkup
 @bot.callback_query_handler(func=lambda call: True)
 def routine(call):
     global all_data
+    name = call.from_user.username
+    """Se la callback contiene QUANTITA allora passiamo al menu di selezione della stessa"""
     if "QUANTITA" in call.data:
-        #GESTIRE L'INSERIMENTO DI QUANTITA'
+        quantity_menu(call)
         return
+    """Se la callback contiene [BACK] allora si torna indietro di uno step"""
     if call.data=="[BACK]":
         all_data=go_back(all_data)
+        """Se la callback contiene [BACK] e perdiamo tutti i dati filtrati allora torniamo al menu principale"""
         if all_data=="":
-            keyboard = types.InlineKeyboardMarkup(row_width=1)
+            keyboard = types.InlineKeyboardMarkup()
             keyboard.add(types.InlineKeyboardButton(text='MESCOLA', callback_data='PRODOTTO=MESCOLA'))
             keyboard.add(types.InlineKeyboardButton(text='TAGLIO', callback_data='PRODOTTO=TAGLIO'))
-            name = call.from_user.username
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Ciao {name} Cosa hai prodotto?",reply_markup=keyboard)
             return
     else:
         all_data+=call.data
     """Crea dizionario sulla base di quanto selezionato"""
     selection=callback_to_dictionary(all_data)
+    """Normalizziamo la stringa di all_data togliendo le selezioni di soli filtri"""
     all_data=dictionary_to_callback(selection)
+    """Se siamo nella selezione di un prodotto di taglio"""
     if selection["PRODOTTO"]=="TAGLIO":
         lastkey=list(selection.keys())[-1]
+        """In base all'ultima selezione decidiamo se fornire un menu di nuovi filtri o di selezione valori"""
         if selection[lastkey]=="[0]":
             next_value(call,cutting_file.tab,selection)
         else:
