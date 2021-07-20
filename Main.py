@@ -232,9 +232,22 @@ def routine(call):
         line=create_line(call)
         file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE.txt"
         append_line(file,line)
+        duo=call.data.split("=")
         separator="**************************************************"
         print(f"\n{separator}\n\nNUOVA VOCE AGGIUNTA AL FILE [{file}]\n VOCE INSERITA: [{line}]\n\n{separator}\n")
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text='STESSO TAGLIO -> NUOVA QUANTITA', callback_data='QUANTITA=0'))
+        keyboard.add(types.InlineKeyboardButton(text='NUOVO TAGLIO', callback_data='PRODOTTO=NUOVOTAGLIO'))
+        art=""
+        for key in final_tab.dictionary.keys():
+            art+=f"{key}: {final_tab.dictionary[key][0]}\n"
+        msg_text=f"Ho inserito il seguente Articolo:\n\n{art}\nQUANTITA': {duo[1]}\n"
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=msg_text,reply_markup=keyboard)
         return
+    if "PRODOTTO=NUOVOTAGLIO"==call.data:
+        all_data=""
+        final_tab=0
+        call.data="PRODOTTO=TAGLIO"
     """Se la callback contiene QUANTITA allora passiamo al menu di selezione della stessa"""
     if "QUANTITA" in call.data:
         quantity_menu(call)
