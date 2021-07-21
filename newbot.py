@@ -19,12 +19,13 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeybo
 from datetime import datetime
 from MyRoutine import MyRoutine
 from MyRoutine import MyCutRoutine
+from colorama import Fore,init,Style
 
 
 
 BOT_TOKEN = "1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4"
 BOT_INTERVAL = 3
-BOT_TIMEOUT = 30
+BOT_TIMEOUT = 10
 routines=[]
 in_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI2.txt"
 out_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE2.txt"
@@ -33,20 +34,26 @@ out_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLA
 
 def bot_polling():
     #global bot #Keep the bot object as global variable if needed
-    print("Starting bot polling now")
+    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    print(f"{Fore.RED}{Style.BRIGHT}{time} | BOT -> POLLING STARTED")
     while True:
         try:
-            print("New bot instance started")
+            time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            print(f"{Fore.RED}{Style.BRIGHT}{time} | BOT -> NEW ISTANCE STARTED")
             bot = telebot.TeleBot(BOT_TOKEN) #Generate new bot instance
             botactions(bot) #If bot is used as a global variable, remove bot as an input param
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
-            print("Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
+            time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            print(f"{Fore.RED}{Style.BRIGHT}{time} | BOT -> ERROR: {ex}")
+            print(f"{Fore.RED}{Style.BRIGHT}{time} | BOT -> POLLING FAILED")
+            print(f"{Fore.RED}{Style.BRIGHT}{time} | BOT -> RESTART IN {BOT_TIMEOUT} SECONDS")
             bot.stop_polling()
             sleep(BOT_TIMEOUT)
         else: #Clean exit
             bot.stop_polling()
-            print("Bot polling loop finished")
+            time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            print(f"{Fore.RED}{Style.BRIGHT}{time} | BOT -> STOPPED")
             break #End loop
 
 
@@ -70,12 +77,14 @@ def botactions(bot):
                 if routine.username==call.from_user.username:
                     #SE GIA' APERTA ROUTINE CON QUEL NOME ALLORA RICOMINCIO LA ROUTINE E INTERROMPO IL CICLO
                     routine.reset()
-                    print("ESISTE!!!")
+                    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                    print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | {routine.username} -> SESSION RESTART {routine.selection}")
                     exist=True
                     break
             if not exist:
                 routines.append(MyCutRoutine(call.from_user.username,in_cut_file,out_cut_file))
-                print("NON ESISTEVA!!!")
+                time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | {call.from_user.username} -> SESSION CREATED")
         for routine in routines:
             #SCORRO TUTTE LE ROUTINE GIA APERTE
             if routine.username==call.from_user.username:
@@ -84,7 +93,11 @@ def botactions(bot):
                 break
 
 
-
+logo=art.text2art("PaloscoBot 2.0",font='graffiti')
+separator=f"{Fore.YELLOW}{Style.BRIGHT}\n****************************************************************************************************\n"
+print(separator)
+print(f"{Fore.CYAN}{Style.BRIGHT}{logo}")
+print(separator)
 polling_thread = threading.Thread(target=bot_polling)
 polling_thread.daemon = True
 polling_thread.start()
