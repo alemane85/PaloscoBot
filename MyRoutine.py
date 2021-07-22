@@ -4,6 +4,7 @@ from datetime import datetime
 from colorama import Fore,init,Style
 from telebot import types
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+import os
 init()
 
 class MyRoutine():
@@ -19,7 +20,6 @@ class MyRoutine():
         file=MyCsvFile()
         file.load(source_file)
         self.source_tab=file.tab
-        self.board_list=[1,5,10,50,100,500]
 
     """
     Reset di tutti gli attributi di classe
@@ -48,20 +48,52 @@ class MyRoutine():
 
 class MyCutRoutine(MyRoutine):
 
+    def __init__(self,username,source_file,output_file):
+        super().__init__(username,source_file,output_file)
+        self.newcut=False
+        self.board_list=[1,5,10,50,100,500]
+        qfile=MyCsvFile()
+        qfile.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_QUANTITA.txt")
+        self.quantity_tab=qfile.tab
+
     def quantity_menu(self,bot,call):
         duo=call.data.split("=")
-        value=int(duo[1])
+        self.newcut=False
+        if "NUOVO"==duo[1]:
+            value=0
+            self.newcut=True
+        else:
+            value=int(duo[1])
         time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | {self.username} -> {self.selection} -> QUANTITA={duo[1]}")
+        i=0
+        for element in self.quantity_tab.dictionary["CODICE"]:
+            if element==self.selection["CODICE"]:
+                standard_quantity=self.quantity_tab.dictionary["QUANTITA"][i]
+                break
+            i+=1
+        art=""
+        for key in self.filtered_tab.dictionary.keys():
+            art+=f"{key}: {self.filtered_tab.dictionary[key][0]}\n"
+        self.msg_text=f"Ho trovato il seguente Articolo:\n\n{art}\n- ✅ CONFERMA per memorizzare il taglio\n- ↪️ INDIETRO per modificare\n\n"
+        self.msg_text+=f"QUANTITA: {str(value)}"
         keyboard = types.InlineKeyboardMarkup()
         for element in self.board_list:
             button_list=[]
             button_list.append(types.InlineKeyboardButton(text=f"-{element}", callback_data=f"{duo[0]}={str(value-element)}"))
             button_list.append(types.InlineKeyboardButton(text=f"+{element}", callback_data=f"{duo[0]}={str(value+element)}"))
             keyboard.add(button_list[0],button_list[1])
+        keyboard.add(types.InlineKeyboardButton(text=f"Numero Standard ➡️ {standard_quantity}", callback_data=f"{duo[0]}={standard_quantity}"))
         keyboard.add(types.InlineKeyboardButton(text="✅ CONFERMA", callback_data=f"TAGLIO_CONFERMATO={str(value)}"))
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Ciao {self.username} hai prodotto: {str(value)}",reply_markup=keyboard)
-
+        keyboard.add(types.InlineKeyboardButton(text="↪️INDIETRO", callback_data="[BACK]"))
+        if self.newcut:
+            old_msg_text=f"✅ Ho memorizzato il seguente Articolo:\n\n"
+            old_msg_text+=f"🔴 CODICE : {self.filtered_tab.dictionary['CODICE'][0]}\n"
+            old_msg_text+=f"🔴 QUANTITA: {self.selection['QUANTITA']}"
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=old_msg_text)
+            bot.send_message(chat_id=call.message.chat.id,text=self.msg_text,reply_markup=keyboard)
+        else:
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
 
     def filter_menu(self,bot,call):
         """Se dopo i filtri applicati la nuova tabella ha un solo elemento
@@ -83,11 +115,15 @@ class MyCutRoutine(MyRoutine):
                         keyboard.add(types.InlineKeyboardButton(text=f"{element}- {num_filtri} voci", callback_data=callback_text))
             keyboard.add(types.InlineKeyboardButton(text="↪️INDIETRO", callback_data="[BACK]"))
             self.msg_text+=f"{self.username} ora filtra per:"
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
+        if self.newcut:
+            bot.send_message(chat_id=call.message.chat.id,text=self.msg_text,reply_markup=keyboard)
+            self.newcut=False
+        else:
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
 
     def evaluate_data(self,call):
         """Ricorda nel messaggio le selezioni effettuate"""
-        self.msg_text="Hai selezionato:\n"
+        self.msg_text="Hai selezionato:\n\n"
         self.filtered_tab=self.source_tab
         for key in self.selection.keys():
             if not self.selection[key]=="[0]":
@@ -113,12 +149,16 @@ class MyCutRoutine(MyRoutine):
             keyboard.add(button_list[counter-1])
         keyboard.add(types.InlineKeyboardButton(text="↪️INDIETRO", callback_data="[BACK]"))
         self.msg_text+=f"{self.username} ora seleziona un valore per {self.filter_key}:"
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
+        if self.newcut:
+            bot.send_message(chat_id=call.message.chat.id,text=self.msg_text,reply_markup=keyboard)
+            self.newcut=False
+        else:
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
 
     def append_line(self,file_name, line):
         # Open the file in append & read mode ('a+')
         with open(file_name, "a+") as file_object:
-            appendEOL = False
+            """appendEOL = False
             # Move read cursor to the start of file.
             file_object.seek(0)
             # Check if file is not empty
@@ -128,11 +168,13 @@ class MyCutRoutine(MyRoutine):
             # If file is not empty then append '\n' before first line for
             # other lines always append '\n' before appending line
             if appendEOL == True:
-                file_object.write("\n")
+                print("METTO A CAPO")
+                #file_object.write("\n")
             else:
                 appendEOL = True
-            # Append element at the end of file
-            file_object.write(line)
+            # Append element at the end of file"""
+            supp=f"{line}\n"
+            file_object.write(supp)
 
     def add_selection(self,data):
         duo=data.split('=')
@@ -165,12 +207,12 @@ class MyCutRoutine(MyRoutine):
 
     def output_menu(self,bot,call):
         keyboard = types.InlineKeyboardMarkup()
-        keyboard.add(types.InlineKeyboardButton(text='STESSO TAGLIO -> NUOVA QUANTITA', callback_data='QUANTITA=0'))
+        keyboard.add(types.InlineKeyboardButton(text='STESSO TAGLIO -> NUOVA QUANTITA', callback_data=f"QUANTITA=NUOVO"))
         keyboard.add(types.InlineKeyboardButton(text='NUOVO TAGLIO', callback_data='PRODOTTO=NUOVOTAGLIO'))
         art=""
         for key in self.filtered_tab.dictionary.keys():
-            art+=f"{key}: {self.filtered_tab.dictionary[key][0]}\n"
-        self.msg_text=f"Ho inserito il seguente Articolo:\n\n{art}\nQUANTITA': {self.selection['QUANTITA']}\n"
+            art+=f" 🔴 {key}: {self.filtered_tab.dictionary[key][0]}\n"
+        self.msg_text=f"✅ Ho memorizzato il seguente Articolo:\n\n{art}\nQUANTITA': {self.selection['QUANTITA']}\n"
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
 
     def handle_call(self,call,bot):
@@ -179,10 +221,15 @@ class MyCutRoutine(MyRoutine):
             self.output_menu(bot,call)
             return
         if "PRODOTTO=NUOVOTAGLIO"==call.data:
+            old_msg_text=f"✅ Ho memorizzato il seguente Articolo:\n\n"
+            old_msg_text+=f"🔴 CODICE : {self.filtered_tab.dictionary['CODICE'][0]}\n"
+            old_msg_text+=f"🔴 QUANTITA: {self.selection['QUANTITA']}"
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=old_msg_text)
             self.reset()
             call.data="PRODOTTO=TAGLIO"
             time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | {self.username} -> SESSION RESET {self.selection}")
+            self.newcut=True
         """Se la callback contiene QUANTITA allora passiamo al menu di selezione della stessa"""
         if "QUANTITA" in call.data:
             self.quantity_menu(bot,call)

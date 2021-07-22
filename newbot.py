@@ -24,8 +24,8 @@ from colorama import Fore,init,Style
 
 
 BOT_TOKEN = "1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4"
-BOT_INTERVAL = 3
-BOT_TIMEOUT = 10
+BOT_INTERVAL = 1
+BOT_TIMEOUT = 5
 routines=[]
 in_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI2.txt"
 out_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE2.txt"
