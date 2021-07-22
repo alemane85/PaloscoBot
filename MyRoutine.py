@@ -189,14 +189,16 @@ class MyCutRoutine(MyRoutine):
             return
         """Se la callback contiene [BACK] allora si torna indietro di uno step"""
         if call.data=="[BACK]":
-            all_data=go_back(all_data)
+            lastkey=list(self.selection.keys())[-1]
+            time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | {self.username} -> REMOVE [{lastkey} : {self.selection[lastkey]}]")
+            del self.selection[lastkey]
             """Se la callback contiene [BACK] e perdiamo tutti i dati filtrati allora torniamo al menu principale"""
-            if all_data=="":
-                final_tab=0
+            if not self.selection:
                 keyboard = types.InlineKeyboardMarkup()
                 keyboard.add(types.InlineKeyboardButton(text='MESCOLA', callback_data='PRODOTTO=MESCOLA'))
                 keyboard.add(types.InlineKeyboardButton(text='TAGLIO', callback_data='PRODOTTO=TAGLIO'))
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Ciao {name} Cosa hai prodotto?",reply_markup=keyboard)
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Ciao {self.username} Cosa hai prodotto?",reply_markup=keyboard)
                 return
         else:
             self.add_selection(call.data)
