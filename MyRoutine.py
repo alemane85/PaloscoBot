@@ -68,7 +68,7 @@ class MyCutRoutine(MyRoutine):
         print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | {self.username} -> {self.selection} -> QUANTITA={duo[1]}")
         i=0
         for element in self.quantity_tab.dictionary["CODICE"]:
-            if element==self.selection["CODICE"]:
+            if element==self.filtered_tab.dictionary["CODICE"][0]:
                 standard_quantity=self.quantity_tab.dictionary["QUANTITA"][i]
                 break
             i+=1
