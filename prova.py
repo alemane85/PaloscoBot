@@ -15,15 +15,15 @@ import logging
 
 # Open a HTTP tunnel on the default port 80
 # <NgrokTunnel: "http://<public_sub>.ngrok.io" -> "http://localhost:80">
-https_tunnel = str(ngrok.connect("5000",bind_tls=True)).split('"')[1]
+https_tunnel = str(ngrok.connect("80",bind_tls=True)).split('"')[1]
 
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
 bot.set_webhook(url=https_tunnel)
 app=Flask(__name__)
-log = logging.getLogger('werkzeug')
+"""log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 app.logger.disabled = True
-log.disabled = True
+log.disabled = True"""
 
 
 routines=[]
@@ -81,4 +81,4 @@ time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | BOT WEBHOOK -> {https_tunnel}\n{Fore.RESET}{Style.RESET_ALL}")
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=80)
