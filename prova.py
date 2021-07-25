@@ -4,26 +4,31 @@ import threading
 from time import sleep
 import os
 import art
-from telebot import types
+from telebot import types,apihelper
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from datetime import datetime
 from MyRoutine import MyRoutine
 from MyRoutine import MyCutRoutine
 from colorama import Fore,init,Style
-from pyngrok import ngrok
+from pyngrok import ngrok,conf
 import logging
 
 # Open a HTTP tunnel on the default port 80
 # <NgrokTunnel: "http://<public_sub>.ngrok.io" -> "http://localhost:80">
+conf.get_default().region = "eu"
+ngrok.set_auth_token("1viBSzHRLk806iWukLmh4obMR3Q_5v8mtxuQ6DTxD1Ecbcv1S")
 https_tunnel = str(ngrok.connect("80",bind_tls=True)).split('"')[1]
 
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
+apihelper.SESSION_TIME_TO_LIVE=300
 bot.set_webhook(url=https_tunnel)
 app=Flask(__name__)
-"""log = logging.getLogger('werkzeug')
+log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 app.logger.disabled = True
-log.disabled = True"""
+log.disabled = True
+logger = telebot.logger
+telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 
 routines=[]
@@ -33,14 +38,22 @@ out_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLA
 
 @app.route('/', methods=["POST"])
 def webhook():
-    bot.process_new_updates(
+    if request.headers.get('content-type') == 'application/json':
+        json_string = request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+        print("\nIL BOT HA PROCESSATO I NUOVI MESSAGGI\n")
+        return 'ok'
+    else:
+        flask.abort(403)
+"""    bot.process_new_updates(
         [telebot.types.Update.de_json(request.stream.read().decode("utf-8"))]
     )
-    return "ok"
+    return "ok"""
 
 @bot.message_handler(commands=['start'])
 def command_start(message):
-    print("\n")
+    print("\nCOMMAND START\n")
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(types.InlineKeyboardButton(text='MESCOLA', callback_data='PRODOTTO=MESCOLA'))
     keyboard.add(types.InlineKeyboardButton(text='TAGLIO', callback_data='PRODOTTO=TAGLIO'))
@@ -49,6 +62,7 @@ def command_start(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def call_routine(call):
+    print("\nCALLBACK HANDLER\n")
     if call.data=='PRODOTTO=TAGLIO':
         exist=False
         for routine in routines:
@@ -70,6 +84,9 @@ def call_routine(call):
             #SE GIA' APERTA ROUTINE CON QUEL NOME ALLORA LE AFFIDO LA CALL E INTERROMPO IL CICLO
             routine.handle_call(call,bot)
             break
+    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    print(f"{Fore.YELLOW}{Style.BRIGHT}{time} | BOT answer_callack_query -> {call.id}")
+    bot.answer_callack_query(call.id)
 
 
 logo=art.text2art("PaloscoBot 2.0",font='graffiti')
