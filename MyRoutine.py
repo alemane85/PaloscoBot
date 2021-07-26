@@ -55,6 +55,7 @@ class MyCutRoutine(MyRoutine):
         qfile=MyCsvFile()
         qfile.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_QUANTITA.txt")
         self.quantity_tab=qfile.tab
+        self.channel_id="-1001532533639"
 
     def quantity_menu(self,bot,call):
         duo=call.data.split("=")
@@ -214,6 +215,11 @@ class MyCutRoutine(MyRoutine):
             art+=f" 🔴 {key}: {self.filtered_tab.dictionary[key][0]}\n"
         self.msg_text=f"✅ Ho memorizzato il seguente Articolo:\n\n{art}\nQUANTITA': {self.selection['QUANTITA']}\n"
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
+        channel_text=f"✅ {self.username} ha memorizzato il seguente Articolo:\n\n"
+        channel_text+=f" 🔴 CODICE : {self.filtered_tab.dictionary['CODICE'][0]}\n"
+        channel_text+=f" 🔴 QUANTITA : {self.selection['QUANTITA']}\n"
+        bot.send_message(chat_id=self.channel_id,text=channel_text)
+        print(call.message.chat.id)
 
     def handle_call(self,call,bot):
         if "TAGLIO_CONFERMATO" in call.data:
