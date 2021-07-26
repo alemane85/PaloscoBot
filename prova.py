@@ -18,6 +18,7 @@ import logging
 conf.get_default().region = "eu"
 ngrok.set_auth_token("1viBSzHRLk806iWukLmh4obMR3Q_5v8mtxuQ6DTxD1Ecbcv1S")
 https_tunnel = str(ngrok.connect("80",bind_tls=True)).split('"')[1]
+"""channel id 1001532533639"""
 
 bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
 apihelper.SESSION_TIME_TO_LIVE=300
