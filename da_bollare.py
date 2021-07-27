@@ -9,9 +9,12 @@ from MyCsv import MyCsvFile
 import webbrowser
 
 in_csv=MyCsvFile()
-in_csv.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE2.txt")
+in_fields="DATA,ORA,UTENTE,QUANTITA,PRODOTTO,CODICE,COLORE,TIPO,DENSITA,POROSITA,MISURA,ALTEZZA\n"
+in_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE.txt"
+in_csv.load(in_file_path)
 out_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_BOLLATI.txt"
 new_tab_rows=[]
+
 for code in in_csv.tab.dict_filter["CODICE"]:
     #print(code)
     supp_tab=(in_csv.tab.filter_by("CODICE",code))
@@ -79,22 +82,34 @@ htmlfile=f"""<!doctype html>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>
 </html>"""
-html_name=f"{os.path.dirname(os.path.realpath(__file__))}\prova.html"
+
+time = datetime.now().strftime("%d%m%Y_%H%M%S")
+html_name=f"{os.path.dirname(os.path.realpath(__file__))}/tagli_da_bollare_html/{time}_bolla.html"
 with open(html_name, "w") as file_object:
     file_object.write(htmlfile)
 url = f"file://{html_name}"
-webbrowser.open(url,new=2)
+for row in new_tab_rows:
+    print(row)
 bolla=input("\n\nNUMERO DI BOLLA DA ASSEGNARE AI TAGLI: ")
-print(f"\nTRASFERIMENTO TAGLI NELLA BOLLA N. {bolla} IN CORSO ...\n")
-with open(out_file_path, "a") as file_object:
-    contatore=0
-    for row in in_csv.rows:
-        line=""
-        for element in row:
-                line+=f"{element},"
-        supp=f"{line}{bolla}"
-        print(supp)
-        supp+="\n"
-        file_object.write(supp)
-        contatore+=1
-print(f"\nTRASFERIMENTO DI N. {contatore} TAGLI NELLA BOLLA N. {bolla} COMPLETATO")
+conf=input("\n\nCONFERMA NUMERO DI BOLLA {bolla} DA ASSEGNARE AI TAGLI: ")
+if conf==bolla:
+    print(f"\nTRASFERIMENTO TAGLI NELLA BOLLA N. {bolla} IN CORSO ...\n")
+    with open(out_file_path, "a") as file_object:
+        contatore=0
+        for row in in_csv.rows:
+            line=""
+            for element in row:
+                    line+=f"{element},"
+            supp=f"{line}{bolla}"
+            print(supp)
+            supp+="\n"
+            file_object.write(supp)
+            contatore+=1
+    print(f"\nTRASFERIMENTO DI N. {contatore} TAGLI NELLA BOLLA N. {bolla} COMPLETATO")
+    print(f"\nRIMOZIONE DI N. {contatore} TAGLI DAL FILE DEI TAGLI DA BOLLARE IN CORSO ...")
+    with open(in_file_path, "w") as file_object:
+        file_object.write(in_fields)
+    print(f"\nRIMOZIONE COMPLETATA!")
+    webbrowser.open(url,new=2)
+else:
+    print(f"\nNUMERI INSERITI NON CORRISPONDENTI")

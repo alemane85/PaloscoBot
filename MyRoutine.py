@@ -5,12 +5,11 @@ from colorama import Fore,init,Style
 from telebot import types
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 import os
-init()
 
+#ALMOST VOID CLASS TO INHERIT
 class MyRoutine():
-    """
-    Inizializzazione di tutte le variabili di classe
-    """
+
+    #Inizializzazione di tutte le variabili di classe
     def __init__(self,username,source_file,output_file):
         self.username=username
         self.verbose=True
@@ -20,10 +19,11 @@ class MyRoutine():
         file=MyCsvFile()
         file.load(source_file)
         self.source_tab=file.tab
+        # CHANNEL USED TO LOG THE ADDED ITEM FROM USERS
+        self.logging_channel_id="-1001532533639"
 
-    """
-    Reset di tutti gli attributi di classe
-    """
+
+    #Reset di tutti gli attributi di classe
     def reset(self):
         self.selection={}
         self.filtered_tab=0
@@ -31,10 +31,9 @@ class MyRoutine():
         self.msg_text=""
         self.error=0
 
-    """
-    Restituisce in forma di stringa una fotografia della classe in quel momento
-    utile in fase di controllo
-    """
+
+    #Restituisce in forma di stringa una fotografia della classe in quel momento
+    #utile in fase di controllo
     def __str__(self):
         string=f"MyRoutine.username={self.username}\n"
         for key in self.selection.keys():
@@ -48,6 +47,7 @@ class MyRoutine():
 
 class MyCutRoutine(MyRoutine):
 
+    #INIT AND CALL SUPER INIT
     def __init__(self,username,source_file,output_file):
         super().__init__(username,source_file,output_file)
         self.newcut=False
@@ -55,8 +55,8 @@ class MyCutRoutine(MyRoutine):
         qfile=MyCsvFile()
         qfile.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_QUANTITA.txt")
         self.quantity_tab=qfile.tab
-        self.channel_id="-1001532533639"
 
+    #HANDLE QUANTITY PART OF THE ROUTINE
     def quantity_menu(self,bot,call):
         duo=call.data.split("=")
         self.newcut=False
@@ -123,7 +123,7 @@ class MyCutRoutine(MyRoutine):
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
 
     def evaluate_data(self,call):
-        """Ricorda nel messaggio le selezioni effettuate"""
+        #Ricorda nel messaggio le selezioni effettuate
         self.msg_text="Hai selezionato:\n\n"
         self.filtered_tab=self.source_tab
         for key in self.selection.keys():
@@ -157,23 +157,7 @@ class MyCutRoutine(MyRoutine):
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
 
     def append_line(self,file_name, line):
-        # Open the file in append & read mode ('a+')
         with open(file_name, "a+") as file_object:
-            """appendEOL = False
-            # Move read cursor to the start of file.
-            file_object.seek(0)
-            # Check if file is not empty
-            data = file_object.read(100)
-            if len(data) > 0:
-                appendEOL = True
-            # If file is not empty then append '\n' before first line for
-            # other lines always append '\n' before appending line
-            if appendEOL == True:
-                print("METTO A CAPO")
-                #file_object.write("\n")
-            else:
-                appendEOL = True
-            # Append element at the end of file"""
             supp=f"{line}\n"
             file_object.write(supp)
 
@@ -218,7 +202,7 @@ class MyCutRoutine(MyRoutine):
         channel_text=f"✅ {self.username} ha memorizzato il seguente Articolo:\n\n"
         channel_text+=f" 🔴 CODICE : {self.filtered_tab.dictionary['CODICE'][0]}\n"
         channel_text+=f" 🔴 QUANTITA : {self.selection['QUANTITA']}\n"
-        bot.send_message(chat_id=self.channel_id,text=channel_text)
+        bot.send_message(chat_id=self.logging_channel_id,text=channel_text)
         print(call.message.chat.id)
 
     def handle_call(self,call,bot):

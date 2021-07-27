@@ -2,7 +2,7 @@ from MyTab import MyTab
 from MyCsv import MyCsvFile
 import os
 
-infile=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI2.txt"
+infile=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI.txt"
 outfile=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_QUANTITA.txt"
 
 file= MyCsvFile()
