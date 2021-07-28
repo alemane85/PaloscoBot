@@ -203,7 +203,6 @@ class MyCutRoutine(MyRoutine):
         channel_text+=f" 🔴 CODICE : {self.filtered_tab.dictionary['CODICE'][0]}\n"
         channel_text+=f" 🔴 QUANTITA : {self.selection['QUANTITA']}\n"
         bot.send_message(chat_id=self.logging_channel_id,text=channel_text)
-        print(call.message.chat.id)
 
     def handle_call(self,call,bot):
         if "TAGLIO_CONFERMATO" in call.data:

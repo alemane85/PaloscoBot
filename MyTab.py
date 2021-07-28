@@ -84,10 +84,74 @@ class MyTab():
         new_tab=MyTab()
         new_tab.create(new_fields,new_rows)
         return new_tab
-
     """
-    Restituisce un nuovo dizionario MyTab filtrato sulla base di key e value
+    Restituisce il numero di righe della tabella
     """
     def rows_number(self):
         lastkey=list(self.dictionary.keys())[-1]
         return len(self.dictionary[lastkey])
+    """
+    Restituisce un nuovo MyTab raggruppato per groupkey e con i valori di sumkey sommati
+    per ogni valore di groupkey
+    """
+    def group_by_sum_by(self,groupkey,sumkey):
+        new_rows=[]
+        new_fields=[]
+        for value in self.dict_filter[groupkey]:
+            supp_tab=self.filter_by(groupkey,value)
+            total=0
+            for num in supp_tab.dictionary[sumkey]:
+                total+=int(num)
+            row=[]
+            for key in supp_tab.dict_filter.keys():
+                if not key==sumkey:
+                    row.append(supp_tab.dict_filter[key][0])
+                else:
+                    row.append(total)
+            new_rows.append(row)
+        for key in self.dict_filter.keys():
+            new_fields.append(key)
+        new_tab=MyTab()
+        new_tab.create(new_fields,new_rows)
+        return new_tab
+
+    """
+    Restituisce una lista di righe della tabella
+    """
+    def give_rows(self):
+        new_rows=[]
+        for i in range(self.rows_number()):
+            row=[]
+            for key in self.dictionary.keys():
+                row.append(self.dictionary[key][i])
+            new_rows.append(row)
+        return new_rows
+    """
+    Restituisce una lista delle chiavi del dizionario
+    """
+    def give_fields(self):
+        return self.dictionary.keys():
+    """
+    Restituisce un nuovo MyTab con contenuti selezionati e ordinati sulla base della lista di chiavi
+    """
+    def make_sub_tab(self,keys):
+        new_dictionary={}
+        for key in keys:
+            for oldkey in self.dictionary.keys():
+                if oldkey==key:
+                    new_dictionary[key]=self.dictionary[key]
+        new_tab=MyTab()
+        new_tab.create_from(new_dictionary)
+        return new_tab
+    """
+    Crea un dizionario e dizonario-filtro sula base del dizionario passato in argomento
+    """
+    def create_from(self,old_dictionary):
+        self.dictionary=old_dictionary
+        for key in self.dictionary.keys():
+            self.dict_filter[key]=[]
+            for element in self.dictionary[key]:
+                    if not element in self.dict_filter[key]:
+                        self.dict_filter[key].append(element)
+            for key in self.dict_filter.keys():
+                self.dict_filter[key].sort()

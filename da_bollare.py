@@ -13,9 +13,8 @@ in_fields="DATA,ORA,UTENTE,QUANTITA,PRODOTTO,CODICE,COLORE,TIPO,DENSITA,POROSITA
 in_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE.txt"
 in_csv.load(in_file_path)
 out_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_BOLLATI.txt"
-new_tab_rows=[]
 
-for code in in_csv.tab.dict_filter["CODICE"]:
+"""for code in in_csv.tab.dict_filter["CODICE"]:
     #print(code)
     supp_tab=(in_csv.tab.filter_by("CODICE",code))
     total=0
@@ -29,7 +28,10 @@ for code in in_csv.tab.dict_filter["CODICE"]:
         supp_tab.dict_filter["POROSITA"][0],
         supp_tab.dict_filter["COLORE"][0]
         ]
-    new_tab_rows.append(row)
+    new_tab_rows.append(row)"""
+this_tab=in_csv.tab.make_sub_tab(["QUANTITA","CODICE","MISURA","ALTEZZA","DENSITA","POROSITA","COLORE"])
+this_tab=this_tab.group_by_sum_by("CODICE","QUANTITA")
+new_tab_rows=this_tab.give_rows()
 tab_fields=f"""
 <thead class="table-light">
     <tr>
