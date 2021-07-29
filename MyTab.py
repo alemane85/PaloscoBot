@@ -130,7 +130,8 @@ class MyTab():
     Restituisce una lista delle chiavi del dizionario
     """
     def give_fields(self):
-        return self.dictionary.keys():
+        fields=self.dictionary.keys()
+        return fields
     """
     Restituisce un nuovo MyTab con contenuti selezionati e ordinati sulla base della lista di chiavi
     """
@@ -144,7 +145,7 @@ class MyTab():
         new_tab.create_from(new_dictionary)
         return new_tab
     """
-    Crea un dizionario e dizonario-filtro sula base del dizionario passato in argomento
+    Crea un dizionario e dizionario-filtro sulla base del dizionario passato in argomento
     """
     def create_from(self,old_dictionary):
         self.dictionary=old_dictionary
@@ -155,3 +156,66 @@ class MyTab():
                         self.dict_filter[key].append(element)
             for key in self.dict_filter.keys():
                 self.dict_filter[key].sort()
+    """
+    Crea un dizionario e dizionario-filtro sulla base del dizionario passato in argomento
+    """
+    def to_html(self,
+                table_class=False,
+                table_style=False,
+                thead_class=False,
+                thead_style=False,
+                th_class=False,
+                th_style=False,
+                bold_key=False):
+        tab_class=""
+        tab_style=""
+        head_class=""
+        head_style=""
+        th_cl=""
+        th_st=""
+        if table_class:
+            tab_class=f' class="{table_class}"'
+        if table_style:
+            tab_style=f' style="{table_style}"'
+        if thead_class:
+            head_class=f' class="{thead_class}"'
+        if thead_style:
+            head_style=f' style="{thead_style}"'
+        if th_class:
+            th_cl=f' class="{th_class}"'
+        if th_style:
+            th_st=f' style="{th_style}"'
+        tab_fields=f"""
+        <thead{head_class}{head_style}>
+            <tr>\n"""
+        fields=self.give_fields()
+        bold_index=0
+        index=0
+        for field in fields:
+            tab_fields+=f"""<th scope="col"{th_cl}{th_st}>{field}</th>\n"""
+            if field==bold_key:
+                bold_index=index
+            index+=1
+        tab_fields+="""
+            </tr>
+        </thead>\n"""
+        rows=self.give_rows()
+        tab_rows=""
+        for row in rows:
+            tab_rows+=f"""
+            <tr>"""
+            i=0
+            for element in row:
+                if i==bold_index:
+                    tab_rows+=f"""<td><b>{element}<b></td>\n"""
+                else:
+                    tab_rows+=f"""<td>{element}</td>"""
+                i+=1
+            tab_rows+="""</tr>"""
+        table_string=f"""
+        <table{tab_class}{tab_style}>
+            {tab_fields}
+            <tbody>{tab_rows}
+            </tbody>
+        </table>"""
+        return table_string

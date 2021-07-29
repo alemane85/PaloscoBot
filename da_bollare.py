@@ -7,78 +7,39 @@ from colorama import Fore,init,Style
 from MyTab import MyTab
 from MyCsv import MyCsvFile
 import webbrowser
+import atexit
 
+def exit_handler():
+    if os.path.exists(html_name):
+        os.remove(html_name)
+
+atexit.register(exit_handler)
 in_csv=MyCsvFile()
 in_fields="DATA,ORA,UTENTE,QUANTITA,PRODOTTO,CODICE,COLORE,TIPO,DENSITA,POROSITA,MISURA,ALTEZZA\n"
 in_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE.txt"
 in_csv.load(in_file_path)
 out_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_BOLLATI.txt"
-
-"""for code in in_csv.tab.dict_filter["CODICE"]:
-    #print(code)
-    supp_tab=(in_csv.tab.filter_by("CODICE",code))
-    total=0
-    for num in supp_tab.dictionary["QUANTITA"]:
-        total+=int(num)
-    row=[
-        total,code,
-        supp_tab.dict_filter["MISURA"][0],
-        supp_tab.dict_filter["ALTEZZA"][0],
-        supp_tab.dict_filter["DENSITA"][0],
-        supp_tab.dict_filter["POROSITA"][0],
-        supp_tab.dict_filter["COLORE"][0]
-        ]
-    new_tab_rows.append(row)"""
-this_tab=in_csv.tab.make_sub_tab(["QUANTITA","CODICE","MISURA","ALTEZZA","DENSITA","POROSITA","COLORE"])
+this_tab=in_csv.tab.make_sub_tab(["QUANTITA","CODICE","MISURA","TIPO","ALTEZZA","DENSITA","POROSITA","COLORE"])
 this_tab=this_tab.group_by_sum_by("CODICE","QUANTITA")
-new_tab_rows=this_tab.give_rows()
-tab_fields=f"""
-<thead class="table-light">
-    <tr>
-      <th scope="col" class="col-md-1">QUANTITA</th>
-      <th scope="col" class="col-md-1">CODICE</th>
-      <th scope="col" class="col-md-1">MISURA</th>
-      <th scope="col" class="col-md-1">ALTEZZA</th>
-      <th scope="col" class="col-md-1">DENSITA</th>
-      <th scope="col" class="col-md-1">POROSITA</th>
-      <th scope="col" class="col-md-1">COLORE</th>
-      <th scope="col" class="col-md-5"></th>
-    </tr>
-</thead>
-      """
-tab_rows=""
-for row in new_tab_rows:
-    tab_rows+=f"""
-    <tr>
-        <th scope="row">{row[0]}</th>
-        <td>{row[1]}</td>
-        <td>{row[2]}</td>
-        <td>{row[3]}</td>
-        <td>{row[4]}</td>
-        <td>{row[5]}</td>
-        <td>{row[6]}</td>
-        <td></td>
-    </tr>"""
+tab_html=this_tab.to_html(
+                            table_class="table table-sm table-hover table-striped text-center table-responsive",
+                            table_style="font-size: 14px",
+                            thead_class="table-light",
+                            bold_key="QUANTITA"
+                            )
 htmlfile=f"""<!doctype html>
 <html lang="en">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
     <title>TAGLI DA BOLLARE</title>
   </head>
   <body>
     <div class="container" style="line-height: 0.8">
-        <table class="table table-sm table-hover table-striped text-center table-responsive" style="font-size: 14px">
-            {tab_fields}
-            <tbody>
-                {tab_rows}
-            </tbody>
-        </table>
+        {tab_html}
     </div>
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
@@ -90,8 +51,7 @@ html_name=f"{os.path.dirname(os.path.realpath(__file__))}/tagli_da_bollare_html/
 with open(html_name, "w") as file_object:
     file_object.write(htmlfile)
 url = f"file://{html_name}"
-for row in new_tab_rows:
-    print(row)
+webbrowser.open(url,new=2)
 bolla=input("\n\nNUMERO DI BOLLA DA ASSEGNARE AI TAGLI: ")
 conf=input("\n\nCONFERMA NUMERO DI BOLLA {bolla} DA ASSEGNARE AI TAGLI: ")
 if conf==bolla:
@@ -112,6 +72,5 @@ if conf==bolla:
     with open(in_file_path, "w") as file_object:
         file_object.write(in_fields)
     print(f"\nRIMOZIONE COMPLETATA!")
-    webbrowser.open(url,new=2)
 else:
     print(f"\nNUMERI INSERITI NON CORRISPONDENTI")
