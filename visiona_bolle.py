@@ -11,8 +11,9 @@ import atexit
 import time
 
 def exit_handler():
-    if os.path.exists(html_name):
-        os.remove(html_name)
+    pass
+    #if os.path.exists(html_name):
+        #os.remove(html_name)
 
 atexit.register(exit_handler)
 in_csv=MyCsvFile()
@@ -37,8 +38,22 @@ if input_choice==choice_dict["BOLLA"]:
                                     thead_class="table-light",
                                     bold_key="QUANTITA"
                                     )
-        h1_html=f"<h1>BOLLA N.{bolla}</h1>"
-        table__html_list.append(f"{h1_html}\n{tab_html}")
+        card_html=f"""
+        <div class="card">
+            <div class="card-header" id="heading{bolla}">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{bolla}" aria-expanded="true" aria-controls="collapse{bolla}">
+                    BOLLA N.{bolla}
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse{bolla}" class="collapse show" aria-labelledby="heading{bolla}" data-parent="#accordion">
+                <div class="card-body">
+                {tab_html}
+                </div>
+            </div>
+        </div>"""
+        table__html_list.append(card_html)
 if input_choice==choice_dict["DATA"]:
     for data in in_csv.tab.dict_filter["DATA"]:
         supp_tab=in_csv.tab.filter_by("DATA",data)
@@ -62,7 +77,7 @@ htmlfile=f"""<!doctype html>
     <title>VISUALIZZA TAGLI BOLLATI</title>
   </head>
   <body>
-    <div class="container" style="line-height: 0.8">"""
+    <div class="container" style="line-height: 0.8" id="accordion">"""
 for tab in table__html_list:
     htmlfile+=tab
 htmlfile+="""

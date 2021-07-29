@@ -12,18 +12,29 @@ from MyRoutine import MyCutRoutine
 from colorama import Fore,init,Style
 from pyngrok import ngrok,conf
 import logging
+from sys import exit
+
+cfg_path=f"{os.path.dirname(os.path.realpath(__file__))}\config.txt"
+with open(cfg_path,"r") as cfg_file:
+    cfg_rows=cfg_file.readlines()
+    pwd=cfg_rows[0].split('=')[1].rstrip("\n")
+    if not pwd=="ok":
+        exit()
+    bot_token=cfg_rows[1].split('=')[1].rstrip("\n")
+    ngrok_token=cfg_rows[2].split('=')[1].rstrip("\n")
+
 
 #NGROK CONFIG
 #SET REGION EU
 conf.get_default().region = "eu"
 #SET TOKEN
-ngrok.set_auth_token("1viBSzHRLk806iWukLmh4obMR3Q_5v8mtxuQ6DTxD1Ecbcv1S")
+ngrok.set_auth_token(ngrok_token)
 #OPEN NGROK HTTPS TUNNEL ON PORT 80
 https_tunnel = str(ngrok.connect("80",bind_tls=True)).split('"')[1]
 
 #TELEBOT CONFIG
 #NEW BOT WITH TOKEN
-bot = telebot.TeleBot("1892091599:AAH2J2nudTs0xffaZbR_4beAuu_3jNZWRK4")
+bot = telebot.TeleBot(bot_token)
 #SET TIME TO LIVE TO 5 MIN TO PREVENT TELEGRAM KICK OF THE BOT
 apihelper.SESSION_TIME_TO_LIVE=300
 #SET WEBHOOK TO THE NGROK HTTPS TUNNEL
