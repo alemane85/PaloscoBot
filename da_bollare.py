@@ -7,16 +7,17 @@ from colorama import Fore,init,Style
 from MyTab import MyTab
 from MyCsv import MyCsvFile
 import webbrowser
-import atexit
+import glob
 
-def exit_handler():
-    if os.path.exists(html_name):
-        os.remove(html_name)
+garbage = glob.glob(f"{os.path.dirname(os.path.realpath(__file__))}/data/html/temp/*.html")
+for trash in garbage:
+    os.remove(trash)
 
-atexit.register(exit_handler)
 in_csv=MyCsvFile()
 in_fields="DATA,ORA,UTENTE,QUANTITA,PRODOTTO,CODICE,COLORE,TIPO,DENSITA,POROSITA,MISURA,ALTEZZA\n"
 in_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI_DA_BOLLARE.txt"
+html_base=f"{os.path.dirname(os.path.realpath(__file__))}/data/html/base.txt"
+header="TAGLI DA BOLLARE"
 in_csv.load(in_file_path)
 out_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI_BOLLATI.txt"
 this_tab=in_csv.tab.make_sub_tab(["QUANTITA","CODICE","MISURA","TIPO","ALTEZZA","DENSITA","POROSITA","COLORE"])
@@ -27,24 +28,21 @@ tab_html=this_tab.to_html(
                             thead_class="table-light",
                             bold_key="QUANTITA"
                             )
-htmlfile=f"""<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>TAGLI DA BOLLARE</title>
-  </head>
-  <body>
-    <div class="container" style="line-height: 0.8">
-        {tab_html}
-    </div>
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-</html>"""
+
+with open(html_base, "r") as file_object:
+    basefile=file_object.read()
+base=basefile.split("$")
+htmlfile=base[0]
+htmlfile+=f"""<div class="container">
+    <header class="d-flex flex-wrap py-3 mb-4 border-bottom">
+      <h3 class="d-flex mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        {header}
+      </h3>
+  </div>
+  <div class="container">"""
+htmlfile+=tab_html
+htmlfile+="</div>"
+htmlfile+=base[1]
 
 time = datetime.now().strftime("%d%m%Y_%H%M%S")
 html_name=f"{os.path.dirname(os.path.realpath(__file__))}/data/html/temp/{time}_bolla.html"
