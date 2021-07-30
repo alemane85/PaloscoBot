@@ -58,11 +58,11 @@ init()
 #SET A EMPTY LIST OF ROUTINES
 routines=[]
 #SET CUTTING ROUTINES FILES
-in_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI.txt"
-out_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE.txt"
+in_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI.txt"
+out_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI_DA_BOLLARE.txt"
 #SET MIXING ROUTINES FILES
-in_mix_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\MESCOLE.txt"
-out_mix_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\MESCOLE_DA_BOLLARE.txt"
+in_mix_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\MESCOLE.txt"
+out_mix_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\MESCOLE_DA_BOLLARE.txt"
 
 
 #RECEIVE POST DATA IN JSON FORMAT AND GIVE IT TO THE BOT TO HANDLE
