@@ -16,9 +16,9 @@ def exit_handler():
 atexit.register(exit_handler)
 in_csv=MyCsvFile()
 in_fields="DATA,ORA,UTENTE,QUANTITA,PRODOTTO,CODICE,COLORE,TIPO,DENSITA,POROSITA,MISURA,ALTEZZA\n"
-in_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_DA_BOLLARE.txt"
+in_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI_DA_BOLLARE.txt"
 in_csv.load(in_file_path)
-out_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\TAGLI_BOLLATI.txt"
+out_file_path=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI_BOLLATI.txt"
 this_tab=in_csv.tab.make_sub_tab(["QUANTITA","CODICE","MISURA","TIPO","ALTEZZA","DENSITA","POROSITA","COLORE"])
 this_tab=this_tab.group_by_sum_by("CODICE","QUANTITA")
 tab_html=this_tab.to_html(
@@ -47,7 +47,7 @@ htmlfile=f"""<!doctype html>
 </html>"""
 
 time = datetime.now().strftime("%d%m%Y_%H%M%S")
-html_name=f"{os.path.dirname(os.path.realpath(__file__))}/tagli_da_bollare_html/{time}_bolla.html"
+html_name=f"{os.path.dirname(os.path.realpath(__file__))}/data/html/temp/{time}_bolla.html"
 with open(html_name, "w") as file_object:
     file_object.write(htmlfile)
 url = f"file://{html_name}"
