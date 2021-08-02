@@ -1,7 +1,7 @@
-#FLASK IMPORTS
+# FLASK IMPORTS
 from flask import Flask,request
 
-#NGROK IMPORTS
+# NGROK IMPORTS
 from pyngrok import ngrok,conf
 
 # TELEGRAM BOT IMPORTS
@@ -9,7 +9,7 @@ import telebot
 from telebot import types,apihelper
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 
-#MISCELLANEUS IMPORTS
+# MISCELLANEUS IMPORTS
 import os
 import art
 from sys import exit
@@ -19,20 +19,19 @@ from datetime import datetime
 import sys
 from os.path import dirname
 
-#SETTING DB AND LIB PATH
+# SETTING DB AND LIB PATH
 upper_path=f"{os.path.dirname(os.path.dirname(os.path.realpath(__file__)))}"
 mydb_path=f"{upper_path}/db"
 mylib_path=f"{upper_path}/lib"
 
-
-#ADD MY LIB DIR TO PYTHON PATH SYSTEM
+# ADD MY LIB DIR TO PYTHON PATH SYSTEM
 sys.path.append(mylib_path)
 
-#MY OWN MODULE IMPORTS
+# MY OWN MODULE IMPORTS
 from MyRoutine import MyRoutine
 from MyRoutine import MyCutRoutine
 
-#READ CONFIG FILE
+# READ CONFIG FILE
 cfg_path=f"{upper_path}/config.txt"
 with open(cfg_path,"r") as cfg_file:
     cfg_rows=cfg_file.readlines()
@@ -43,27 +42,27 @@ with open(cfg_path,"r") as cfg_file:
     ngrok_token=cfg_rows[2].split('=')[1].rstrip("\n")
 
 
-#NGROK CONFIG
-#SET REGION EU
+# NGROK CONFIG
+# SET REGION EU
 conf.get_default().region = "eu"
-#SET TOKEN
+# SET TOKEN
 ngrok.set_auth_token(ngrok_token)
-#OPEN NGROK HTTPS TUNNEL ON PORT 80
+# OPEN NGROK HTTPS TUNNEL ON PORT 80
 https_tunnel = str(ngrok.connect("80",bind_tls=True)).split('"')[1]
 https_tunnel+="/PaloscoBot"
 
-#TELEBOT CONFIG
-#NEW BOT WITH TOKEN
+# TELEBOT CONFIG
+# NEW BOT WITH TOKEN
 bot = telebot.TeleBot(bot_token)
-#SET TIME TO LIVE TO 5 MIN TO PREVENT TELEGRAM KICK OF THE BOT
+# SET TIME TO LIVE TO 5 MIN TO PREVENT TELEGRAM KICK OF THE BOT
 apihelper.SESSION_TIME_TO_LIVE=300
-#SET WEBHOOK TO THE NGROK HTTPS TUNNEL
+# SET WEBHOOK TO THE NGROK HTTPS TUNNEL
 bot.set_webhook(url=https_tunnel)
-#TELEBOT LOGGER ENABLED BY UNCOMMENTING THIS 2 LINES
+# TELEBOT LOGGER ENABLED BY UNCOMMENTING THIS 2 LINES
 #telebot_logger = telebot.logger
 #telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
-#FLASK CONFIG
+# FLASK CONFIG
 app=Flask(__name__)
 # DISABLE FLASK LOGGER - COMMENT THIS LINES TO ENABLE
 log = logging.getLogger('werkzeug')
@@ -71,21 +70,20 @@ log.setLevel(logging.ERROR)
 app.logger.disabled = True
 log.disabled = True
 
-#COLORAMA ACTIVATE
+# COLORAMA ACTIVATE
 init()
 
-
-#SET A EMPTY LIST OF ROUTINES
+# SET A EMPTY LIST OF ROUTINES
 routines=[]
-#SET CUTTING ROUTINES FILES
+# SET CUTTING ROUTINES FILES
 in_cut_file=f"{mydb_path}/TAGLI.txt"
 out_cut_file=f"{mydb_path}/TAGLI_DA_BOLLARE.txt"
-#SET MIXING ROUTINES FILES
+# SET MIXING ROUTINES FILES
 in_mix_file=f"{mydb_path}/MESCOLE.txt"
 out_mix_file=f"{mydb_path}/MESCOLE_DA_BOLLARE.txt"
 
 
-#RECEIVE POST DATA IN JSON FORMAT AND GIVE IT TO THE BOT TO HANDLE
+# RECEIVE POST DATA IN JSON FORMAT AND GIVE IT TO THE BOT TO HANDLE
 @app.route('/PaloscoBot', methods=["POST"])
 def webhook():
     if request.headers.get('content-type') == 'application/json':

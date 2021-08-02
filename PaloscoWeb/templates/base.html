@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel= "stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+    <link rel= "stylesheet" href="{{ url_for('static',filename='mycss.css') }}">
     <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/popper.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
@@ -13,8 +14,9 @@
       <div class="container">
         <header class="d-flex flex-wrap py-3 mb-4 border-bottom">
           <h3 class="d-flex mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-            PaloscoWeb 2.0
+            {% block title %}{% endblock %}
           </h3>
       </div>
+      {% block content %}{% endblock %}
   </body>
 </html>
