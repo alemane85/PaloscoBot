@@ -53,7 +53,9 @@ class MyCutRoutine(MyRoutine):
         self.newcut=False
         self.board_list=[1,5,10,50,100,500]
         qfile=MyCsvFile()
-        qfile.load(f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI_QUANTITA.txt")
+        qfile_path=f"{os.path.dirname(os.path.dirname(os.path.realpath(__file__)))}\db\TAGLI_QUANTITA.txt"
+        qfile.load(qfile_path)
+        print(qfile_path)
         self.quantity_tab=qfile.tab
 
     #HANDLE QUANTITY PART OF THE ROUTINE

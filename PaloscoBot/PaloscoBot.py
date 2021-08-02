@@ -1,20 +1,39 @@
+#FLASK IMPORTS
 from flask import Flask,request
+
+#NGROK IMPORTS
+from pyngrok import ngrok,conf
+
+# TELEGRAM BOT IMPORTS
 import telebot
-import threading
-from time import sleep
-import os
-import art
 from telebot import types,apihelper
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+
+#MISCELLANEUS IMPORTS
+import os
+import art
+from sys import exit
+from colorama import Fore,init,Style
+import logging
 from datetime import datetime
+import sys
+from os.path import dirname
+
+#SETTING DB AND LIB PATH
+upper_path=f"{os.path.dirname(os.path.dirname(os.path.realpath(__file__)))}"
+mydb_path=f"{upper_path}/db"
+mylib_path=f"{upper_path}/lib"
+
+
+#ADD MY LIB DIR TO PYTHON PATH SYSTEM
+sys.path.append(mylib_path)
+
+#MY OWN MODULE IMPORTS
 from MyRoutine import MyRoutine
 from MyRoutine import MyCutRoutine
-from colorama import Fore,init,Style
-from pyngrok import ngrok,conf
-import logging
-from sys import exit
 
-cfg_path=f"{os.path.dirname(os.path.realpath(__file__))}\config.txt"
+#READ CONFIG FILE
+cfg_path=f"{upper_path}/config.txt"
 with open(cfg_path,"r") as cfg_file:
     cfg_rows=cfg_file.readlines()
     pwd=cfg_rows[0].split('=')[1].rstrip("\n")
@@ -31,6 +50,7 @@ conf.get_default().region = "eu"
 ngrok.set_auth_token(ngrok_token)
 #OPEN NGROK HTTPS TUNNEL ON PORT 80
 https_tunnel = str(ngrok.connect("80",bind_tls=True)).split('"')[1]
+https_tunnel+="/PaloscoBot"
 
 #TELEBOT CONFIG
 #NEW BOT WITH TOKEN
@@ -58,15 +78,15 @@ init()
 #SET A EMPTY LIST OF ROUTINES
 routines=[]
 #SET CUTTING ROUTINES FILES
-in_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI.txt"
-out_cut_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\TAGLI_DA_BOLLARE.txt"
+in_cut_file=f"{mydb_path}/TAGLI.txt"
+out_cut_file=f"{mydb_path}/TAGLI_DA_BOLLARE.txt"
 #SET MIXING ROUTINES FILES
-in_mix_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\MESCOLE.txt"
-out_mix_file=f"{os.path.dirname(os.path.realpath(__file__))}\data\db\MESCOLE_DA_BOLLARE.txt"
+in_mix_file=f"{mydb_path}/MESCOLE.txt"
+out_mix_file=f"{mydb_path}/MESCOLE_DA_BOLLARE.txt"
 
 
 #RECEIVE POST DATA IN JSON FORMAT AND GIVE IT TO THE BOT TO HANDLE
-@app.route('/', methods=["POST"])
+@app.route('/PaloscoBot', methods=["POST"])
 def webhook():
     if request.headers.get('content-type') == 'application/json':
         json_string = request.get_data().decode('utf-8')
