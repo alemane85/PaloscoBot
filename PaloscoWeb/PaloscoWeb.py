@@ -33,11 +33,21 @@ def home():
 	da_bollare_csv=MyCsvFile()
 	da_bollare_csv.load(FILE_DA_BOLLARE)
 	da_bollare_tab=da_bollare_csv.tab
-	da_bollare_tab=da_bollare_tab.make_sub_tab(["QUANTITA","CODICE"])
-	da_bollare_tab=da_bollare_tab.group_by_sum_by("CODICE","QUANTITA")
-	fields=da_bollare_tab.give_fields()
-	rows=da_bollare_tab.give_rows()
-	return render_template("index.html",fields=fields,rows=rows)
+	main_tab=da_bollare_tab.make_sub_tab(["QUANTITA","CODICE","MISURA","ALTEZZA","TIPO","DENSITA","POROSITA","COLORE"])
+	main_tab=main_tab.group_by_sum_by("CODICE","QUANTITA")
+	fields=main_tab.give_fields()
+	rows=main_tab.give_rows()
+	sub_tabs=[]
+	sub_fields=["QUANTITA","DATA","ORA","UTENTE"]
+	for row in rows:
+		this_tab=da_bollare_tab.filter_by("CODICE",row[1])
+		this_tab=this_tab.make_sub_tab(sub_fields)
+		sub_tabs.append(this_tab.give_rows())
+	return render_template("index.html",
+							fields=fields,
+							enum_rows=enumerate(rows),
+							sub_fields=sub_fields,
+							sub_tabs=sub_tabs)
 
 if __name__ == "__main__":
     app.run()
