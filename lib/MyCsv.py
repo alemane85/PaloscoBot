@@ -54,10 +54,8 @@ class MyCsvFile:
         if not self.rows:
             string+=f"\nrows={self.rows}"
         else:
-            i=0
-            for row in self.rows:
+            for i, row in enumerate(self.rows):
                 string+=f"\nrow[{i}]={row}"
-                i+=1
             i=0
         string+=str(self.tab)
         string+=f"\ndelimiter={self.delimiter}"

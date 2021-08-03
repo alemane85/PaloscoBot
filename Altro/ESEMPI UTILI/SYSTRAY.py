@@ -137,8 +137,6 @@ class SysTrayIcon(object):
             self.execute_menu_option(self.default_menu_index + self.FIRST_ID)
         elif lparam==win32con.WM_RBUTTONUP:
             self.show_menu()
-        elif lparam==win32con.WM_LBUTTONUP:
-            pass
         return True
 
     def show_menu(self):
@@ -167,14 +165,14 @@ class SysTrayIcon(object):
                 item, extras = win32gui_struct.PackMENUITEMINFO(text=option_text,
                                                                 hbmpItem=option_icon,
                                                                 wID=option_id)
-                win32gui.InsertMenuItem(menu, 0, 1, item)
             else:
                 submenu = win32gui.CreatePopupMenu()
                 self.create_menu(submenu, option_action)
                 item, extras = win32gui_struct.PackMENUITEMINFO(text=option_text,
                                                                 hbmpItem=option_icon,
                                                                 hSubMenu=submenu)
-                win32gui.InsertMenuItem(menu, 0, 1, item)
+
+            win32gui.InsertMenuItem(menu, 0, 1, item)
 
     def prep_menu_icon(self, icon):
         # First load the icon.

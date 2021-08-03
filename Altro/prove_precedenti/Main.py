@@ -19,14 +19,13 @@ FUNZIONI DI UTILITA' PER IL PASSAGGIO DALLA STRINGA DI DATA AL DIZIONARIO DI
 SELEZIONE
 """
 def dictionary_to_callback(selection):
-    new_string=""
     lastkey=list(selection.keys())[-1]
-    for key in selection.keys():
-        if key==lastkey:
-            new_string+=f"{key}={selection[key]}"
-        else:
-            new_string+=f"{key}={selection[key]}-"
-    return new_string
+    return "".join(
+        f"{key}={selection[key]}"
+        if key == lastkey
+        else f"{key}={selection[key]}-"
+        for key in selection.keys()
+    )
 
 def callback_to_dictionary(data):
     dictionary={}
@@ -70,7 +69,7 @@ def next_value(call,tab,selection):
     filtered_tab=tab
     filter_key=0
     for key in selection.keys():
-        if not selection[key]=="[0]":
+        if selection[key] != "[0]":
             msg_text+=f"{key} = {selection[key]}\n"
             filtered_tab=filtered_tab.filter_by(key,selection[key])
         else:
@@ -115,16 +114,18 @@ def next_filter(call,tab,selection):
         keyboard = types.InlineKeyboardMarkup(row_width=1)
         keyboard.add(types.InlineKeyboardButton(text="✅ CONFERMA", callback_data="QUANTITA=0"))
         keyboard.add(types.InlineKeyboardButton(text="↪️ INDIETRO", callback_data="[BACK]"))
-        art=""
-        for key in filtered_tab.dictionary.keys():
-            art+=f"{key}: {filtered_tab.dictionary[key][0]}\n"
+        art = "".join(
+            f"{key}: {filtered_tab.dictionary[key][0]}\n"
+            for key in filtered_tab.dictionary.keys()
+        )
+
         msg_text=f"Ho trovato il seguente Articolo:\n\n{art}\n- ✅ CONFERMA per inserire la quantità\n- ↪️ INDIETRO per modificare"
     else:
         keyboard = types.InlineKeyboardMarkup(row_width=1)
         for element in tab.dictionary.keys():
-            if not element in selection.keys():
+            if element not in selection.keys():
                 num_filtri=len(list(filtered_tab.dict_filter[element]))
-                if not num_filtri==1:
+                if num_filtri != 1:
                     callback_text=f"-{element}=[0]"
                     keyboard.add(types.InlineKeyboardButton(text=f"{element}- {num_filtri} voci", callback_data=callback_text))
         keyboard.add(types.InlineKeyboardButton(text="↪️INDIETRO", callback_data="[BACK]"))
@@ -139,8 +140,7 @@ def go_back(data):
     final_tab=0
     list=data.split("-")
     del list[-1]
-    string="-".join(list)
-    return string
+    return "-".join(list)
 """
 MENU PER INSERIMENTO QUANTITA' UNA VOLTA DEFINITO L'ARTICOLO DI TAGLIO
 """
@@ -149,28 +149,44 @@ def quantity_menu(call):
     duo=call.data.split("=")
     value=int(duo[1])
     keyboard = types.InlineKeyboardMarkup()
-    button_list=[]
-    button_list.append(types.InlineKeyboardButton(text='-1', callback_data=f"{duo[0]}={str(value-1)}"))
+    button_list = [
+        types.InlineKeyboardButton(
+            text='-1', callback_data=f"{duo[0]}={str(value-1)}"
+        )
+    ]
+
     button_list.append(types.InlineKeyboardButton(text='+1', callback_data=f"{duo[0]}={str(value+1)}"))
     keyboard.add(button_list[0],button_list[1])
     button_list=[]
     button_list.append(types.InlineKeyboardButton(text='-5', callback_data=f"{duo[0]}={str(value-5)}"))
     button_list.append(types.InlineKeyboardButton(text='+5', callback_data=f"{duo[0]}={str(value+5)}"))
     keyboard.add(button_list[0],button_list[1])
-    button_list=[]
-    button_list.append(types.InlineKeyboardButton(text='-10', callback_data=f"{duo[0]}={str(value-10)}"))
+    button_list = [
+        types.InlineKeyboardButton(
+            text='-10', callback_data=f"{duo[0]}={str(value-10)}"
+        )
+    ]
+
     button_list.append(types.InlineKeyboardButton(text='+10', callback_data=f"{duo[0]}={str(value+10)}"))
     keyboard.add(button_list[0],button_list[1])
-    button_list=[]
-    button_list.append(types.InlineKeyboardButton(text='-50', callback_data=f"{duo[0]}={str(value-50)}"))
+    button_list = [
+        types.InlineKeyboardButton(
+            text='-50', callback_data=f"{duo[0]}={str(value-50)}"
+        )
+    ]
+
     button_list.append(types.InlineKeyboardButton(text='+50', callback_data=f"{duo[0]}={str(value+50)}"))
     keyboard.add(button_list[0],button_list[1])
     button_list=[]
     button_list.append(types.InlineKeyboardButton(text='-100', callback_data=f"{duo[0]}={str(value-100)}"))
     button_list.append(types.InlineKeyboardButton(text='+100', callback_data=f"{duo[0]}={str(value+100)}"))
     keyboard.add(button_list[0],button_list[1])
-    button_list=[]
-    button_list.append(types.InlineKeyboardButton(text='-500', callback_data=f"{duo[0]}={str(value-500)}"))
+    button_list = [
+        types.InlineKeyboardButton(
+            text='-500', callback_data=f"{duo[0]}={str(value-500)}"
+        )
+    ]
+
     button_list.append(types.InlineKeyboardButton(text='+500', callback_data=f"{duo[0]}={str(value+500)}"))
     keyboard.add(button_list[0],button_list[1])
     keyboard.add(types.InlineKeyboardButton(text="✅ CONFERMA", callback_data=f"TAGLIO_CONFERMATO={str(value)}"))
@@ -182,16 +198,14 @@ MENU PER INSERIMENTO QUANTITA' UNA VOLTA DEFINITO L'ARTICOLO DI TAGLIO
 def append_line(file_name, line):
     # Open the file in append & read mode ('a+')
     with open(file_name, "a+") as file_object:
-        appendEOL = False
         # Move read cursor to the start of file.
         file_object.seek(0)
         # Check if file is not empty
         data = file_object.read(100)
-        if len(data) > 0:
-            appendEOL = True
+        appendEOL = len(data) > 0
         # If file is not empty then append '\n' before first line for
         # other lines always append '\n' before appending line
-        if appendEOL == True:
+        if appendEOL:
             file_object.write("\n")
         else:
             appendEOL = True
@@ -238,13 +252,15 @@ def routine(call):
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='STESSO TAGLIO -> NUOVA QUANTITA', callback_data='QUANTITA=0'))
         keyboard.add(types.InlineKeyboardButton(text='NUOVO TAGLIO', callback_data='PRODOTTO=NUOVOTAGLIO'))
-        art=""
-        for key in final_tab.dictionary.keys():
-            art+=f"{key}: {final_tab.dictionary[key][0]}\n"
+        art = "".join(
+            f"{key}: {final_tab.dictionary[key][0]}\n"
+            for key in final_tab.dictionary.keys()
+        )
+
         msg_text=f"Ho inserito il seguente Articolo:\n\n{art}\nQUANTITA': {duo[1]}\n"
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=msg_text,reply_markup=keyboard)
         return
-    if "PRODOTTO=NUOVOTAGLIO"==call.data:
+    if call.data == "PRODOTTO=NUOVOTAGLIO":
         all_data=""
         final_tab=0
         call.data="PRODOTTO=TAGLIO"
