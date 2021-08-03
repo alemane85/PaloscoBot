@@ -36,7 +36,7 @@ cfg_path=f"{upper_path}/config.txt"
 with open(cfg_path,"r") as cfg_file:
     cfg_rows=cfg_file.readlines()
     pwd=cfg_rows[0].split('=')[1].rstrip("\n")
-    if not pwd=="ok":
+    if pwd != "ok":
         exit()
     bot_token=cfg_rows[1].split('=')[1].rstrip("\n")
     ngrok_token=cfg_rows[2].split('=')[1].rstrip("\n")

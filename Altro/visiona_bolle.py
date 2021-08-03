@@ -38,8 +38,7 @@ if input_choice=="2":
     title="DATA: "
     key="DATA"
     no_key="BOLLA"
-index=0
-for element in filters:
+for index, element in enumerate(filters):
     supp_tab=in_csv.tab.filter_by(key,element)
     this_tab=supp_tab.make_sub_tab([no_key,"UTENTE","QUANTITA","CODICE",
                                     "MISURA","TIPO","ALTEZZA","DENSITA",
@@ -65,7 +64,6 @@ for element in filters:
         </div>
     </div>
     </div>"""
-    index+=1
     table__html_list.append(card_html)
 
 with open(html_base, "r") as file_object:

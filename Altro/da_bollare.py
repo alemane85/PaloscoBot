@@ -57,9 +57,7 @@ if conf==bolla:
     with open(out_file_path, "a") as file_object:
         contatore=0
         for row in in_csv.rows:
-            line=""
-            for element in row:
-                    line+=f"{element},"
+            line = "".join(f"{element}," for element in row)
             supp=f"{line}{bolla}"
             print(supp)
             supp+="\n"

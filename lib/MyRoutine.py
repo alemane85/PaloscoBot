@@ -62,7 +62,7 @@ class MyCutRoutine(MyRoutine):
     def quantity_menu(self,bot,call):
         duo=call.data.split("=")
         self.newcut=False
-        if "NUOVO"==duo[1]:
+        if duo[1] == "NUOVO":
             value=0
             self.newcut=True
         else:
@@ -75,15 +75,22 @@ class MyCutRoutine(MyRoutine):
                 standard_quantity=self.quantity_tab.dictionary["QUANTITA"][i]
                 break
             i+=1
-        art=""
-        for key in self.filtered_tab.dictionary.keys():
-            art+=f"{key}: {self.filtered_tab.dictionary[key][0]}\n"
+        art = "".join(
+            f"{key}: {self.filtered_tab.dictionary[key][0]}\n"
+            for key in self.filtered_tab.dictionary.keys()
+        )
+
         self.msg_text=f"Ho trovato il seguente Articolo:\n\n{art}\n- ✅ CONFERMA per memorizzare il taglio\n- ↪️ INDIETRO per modificare\n\n"
         self.msg_text+=f"QUANTITA: {str(value)}"
         keyboard = types.InlineKeyboardMarkup()
         for element in self.board_list:
-            button_list=[]
-            button_list.append(types.InlineKeyboardButton(text=f"-{element}", callback_data=f"{duo[0]}={str(value-element)}"))
+            button_list = [
+                types.InlineKeyboardButton(
+                    text=f"-{element}",
+                    callback_data=f"{duo[0]}={str(value-element)}",
+                )
+            ]
+
             button_list.append(types.InlineKeyboardButton(text=f"+{element}", callback_data=f"{duo[0]}={str(value+element)}"))
             keyboard.add(button_list[0],button_list[1])
         keyboard.add(types.InlineKeyboardButton(text=f"Numero Standard ➡️ {standard_quantity}", callback_data=f"{duo[0]}={standard_quantity}"))
@@ -105,15 +112,17 @@ class MyCutRoutine(MyRoutine):
         if self.filtered_tab.rows_number()==1:
             keyboard.add(types.InlineKeyboardButton(text="✅ CONFERMA", callback_data="QUANTITA=0"))
             keyboard.add(types.InlineKeyboardButton(text="↪️ INDIETRO", callback_data="[BACK]"))
-            art=""
-            for key in self.filtered_tab.dictionary.keys():
-                art+=f"{key}: {self.filtered_tab.dictionary[key][0]}\n"
+            art = "".join(
+                f"{key}: {self.filtered_tab.dictionary[key][0]}\n"
+                for key in self.filtered_tab.dictionary.keys()
+            )
+
             self.msg_text=f"Ho trovato il seguente Articolo:\n\n{art}\n- ✅ CONFERMA per inserire la quantità\n- ↪️ INDIETRO per modificare"
         else:
             for element in self.source_tab.dictionary.keys():
-                if not element in self.selection.keys():
+                if element not in self.selection.keys():
                     num_filtri=len(list(self.filtered_tab.dict_filter[element]))
-                    if not num_filtri==1:
+                    if num_filtri != 1:
                         callback_text=f"{element}=[0]"
                         keyboard.add(types.InlineKeyboardButton(text=f"{element}- {num_filtri} voci", callback_data=callback_text))
             keyboard.add(types.InlineKeyboardButton(text="↪️INDIETRO", callback_data="[BACK]"))
@@ -129,7 +138,7 @@ class MyCutRoutine(MyRoutine):
         self.msg_text="Hai selezionato:\n\n"
         self.filtered_tab=self.source_tab
         for key in self.selection.keys():
-            if not self.selection[key]=="[0]":
+            if self.selection[key] != "[0]":
                 self.msg_text+=f"{key} = {self.selection[key]}\n"
                 self.filtered_tab=self.filtered_tab.filter_by(key,self.selection[key])
             else:
@@ -196,9 +205,11 @@ class MyCutRoutine(MyRoutine):
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='STESSO TAGLIO -> NUOVA QUANTITA', callback_data=f"QUANTITA=NUOVO"))
         keyboard.add(types.InlineKeyboardButton(text='NUOVO TAGLIO', callback_data='PRODOTTO=NUOVOTAGLIO'))
-        art=""
-        for key in self.filtered_tab.dictionary.keys():
-            art+=f" 🔴 {key}: {self.filtered_tab.dictionary[key][0]}\n"
+        art = "".join(
+            f" 🔴 {key}: {self.filtered_tab.dictionary[key][0]}\n"
+            for key in self.filtered_tab.dictionary.keys()
+        )
+
         self.msg_text=f"✅ Ho memorizzato il seguente Articolo:\n\n{art}\nQUANTITA': {self.selection['QUANTITA']}\n"
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=self.msg_text,reply_markup=keyboard)
         channel_text=f"✅ {self.username} ha memorizzato il seguente Articolo:\n\n"
@@ -211,7 +222,7 @@ class MyCutRoutine(MyRoutine):
             self.output_data(call)
             self.output_menu(bot,call)
             return
-        if "PRODOTTO=NUOVOTAGLIO"==call.data:
+        if call.data == "PRODOTTO=NUOVOTAGLIO":
             old_msg_text=f"✅ Ho memorizzato il seguente Articolo:\n\n"
             old_msg_text+=f"🔴 CODICE : {self.filtered_tab.dictionary['CODICE'][0]}\n"
             old_msg_text+=f"🔴 QUANTITA: {self.selection['QUANTITA']}"
