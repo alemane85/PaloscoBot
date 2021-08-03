@@ -13,24 +13,31 @@
          <col class="col-md-1">
          <col class="col-md-1">
          <col class="col-md-1">
-         <col class="col-md-3">
+         <col class="col-md-1">
+         <col class="col-md-2">
      </colgroup>
         <thead class="table-light">
-            <tr data-toggle="collapse" data-target=".multi-collapse" class="clickable collapsed">
-                <th>
+            <tr>
+                <th data-toggle="collapse" data-target=".multi-collapse" role="button" class="clickable collapsed d-print-none">
                     <span class="if-collapsed">+</span>
                     <span class="if-not-collapsed">-</span>
+                </th>
+                <th class="d-print-none">BOLLA
                 </th>{% for field in fields %}
                 <th>{{field}}</th>{% endfor %}
                 <th></th>
             </tr>
         </thead>
         <tbody>{% for index,row in enum_rows %}
-            <tr data-toggle="collapse" data-target="#accordion{{index}}" class="clickable collapsed">
-                <td>
+            <tr>
+                <td data-toggle="collapse" data-target="#accordion{{index}}" role="button" class="clickable collapsed d-print-none">
                     <span class="if-collapsed">+</span>
                     <span class="if-not-collapsed">-</span>
-                </td>{% for element in row %}
+                </td>
+                <td class="d-print-none">
+                    <input type="checkbox" id="checkbox{{index}}" name="checkbox{{index}}" value="{{row[1]}}">
+                </td>
+                {% for element in row %}
                 <td>
                     {{element}}
                 </td>{% endfor %}
@@ -45,11 +52,13 @@
                          <col class="col-md-1">
                          <col class="col-md-1">
                          <col class="col-md-1">
-                         <col class="col-md-7">
+                         <col class="col-md-1">
+                         <col class="col-md-6">
                      </colgroup>
                         <thead class="table-light">
                             <tr>
-                                <th></th>
+                                <th class="d-print-none"></th>
+                                <th class="d-print-none"></th>
                                 {% for sub_field in sub_fields %}
                                 <th>{{sub_field}}</th>
                                 {% endfor %}
@@ -59,7 +68,8 @@
                         <tbody>
                             {% for sub_row in sub_tabs[index] %}
                             <tr>
-                                <td></td>
+                                <td class="d-print-none"></td>
+                                <td class="d-print-none"></td>
                                 {% for sub_element in sub_row %}
                                 <td>{{sub_element}}</td>
                                 {% endfor %}
