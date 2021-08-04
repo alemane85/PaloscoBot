@@ -1,4 +1,4 @@
-from flask import Flask,render_template
+from flask import Flask,render_template,request
 import webbrowser
 import os
 import sys
@@ -48,6 +48,19 @@ def home():
 							enum_rows=enumerate(rows),
 							sub_fields=sub_fields,
 							sub_tabs=sub_tabs)
+
+@app.route('/crea_bolla',methods = ['POST', 'GET'])
+def crea_bolla():
+	if request.method == 'POST':
+		bolla=request.form['numero']
+		return bolla
+	else:
+		bolla=request.args.get('numero')
+		codici=request.args.getlist('mycheck')
+		mystring=""
+		for element in codici:
+			mystring+=f"{element},"
+		return mystring
 
 if __name__ == "__main__":
     app.run()
