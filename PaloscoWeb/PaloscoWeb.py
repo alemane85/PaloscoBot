@@ -34,6 +34,14 @@ def home():
 	da_bollare_csv=MyCsvFile()
 	da_bollare_csv.load(FILE_DA_BOLLARE)
 	da_bollare_tab=da_bollare_csv.tab
+	if da_bollare_tab.is_empty():
+		return render_template("index.html",
+								empty=True,
+								fields=0,
+								data=0,
+								enum_rows=0,
+								sub_fields=0,
+								sub_tabs=0)
 	main_tab=da_bollare_tab.make_sub_tab(["QUANTITA","CODICE","MISURA","ALTEZZA","TIPO","DENSITA","POROSITA","COLORE"])
 	main_tab=main_tab.group_by_sum_by("CODICE","QUANTITA")
 	fields=main_tab.give_fields()
@@ -46,6 +54,7 @@ def home():
 		sub_tabs.append(this_tab.give_rows())
 	data=datetime.now().strftime("%d/%m/%Y")
 	return render_template("index.html",
+							empty=False,
 							fields=fields,
 							data=data,
 							enum_rows=enumerate(rows),

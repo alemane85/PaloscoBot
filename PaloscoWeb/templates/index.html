@@ -2,8 +2,9 @@
 {% block title %}PaloscoWeb 2.0{% endblock %}
 {% block content %}
 <div class="container">
+    <h5>Tagli da Bollare</h5>
+{% if not empty %}
     <form class="row g-3" action="/crea_bolla" method="POST" onsubmit="return valthisform()">
-        <h5>Tagli da Bollare</h5>
         <div class="col-auto d-print-none">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="inputGroup">Bolla n.</span>
@@ -101,5 +102,10 @@
             </tbody>
         </table>
     </form>
+{% else %}
+    <div class="alert alert-danger" role="alert">
+        Non ci sono tagli da bollare al momento
+    </div>
+{% endif %}
 </div>
 {% endblock %}

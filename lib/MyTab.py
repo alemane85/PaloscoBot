@@ -156,3 +156,11 @@ class MyTab():
                         self.dict_filter[key].append(element)
             for key in self.dict_filter.keys():
                 self.dict_filter[key].sort()
+    """
+    Restituisce vero se la tabella è vuota
+    """
+    def is_empty(self):
+        for key in self.dictionary.keys():
+            if self.dictionary[key]:
+                return False
+        return True
