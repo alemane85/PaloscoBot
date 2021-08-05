@@ -130,7 +130,7 @@ class MyTab():
     Restituisce una lista delle chiavi del dizionario
     """
     def give_fields(self):
-        fields=self.dictionary.keys()
+        fields=list(self.dictionary.keys())
         return fields
     """
     Restituisce un nuovo MyTab con contenuti selezionati e ordinati sulla base della lista di chiavi

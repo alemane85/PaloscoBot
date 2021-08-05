@@ -2,33 +2,21 @@
 {% block title %}PaloscoWeb 2.0{% endblock %}
 {% block content %}
 <div class="container">
-    <form method=" post" action="form-submit.php">
-<table class='table table-striped my_table' >
-<tr> <td>First Name</td> <td><input type="text" id="t1" name="FirstName"></td> </tr>
-<tr><td>Gender</td><td><input type="radio" id="r1" name="gender" value=Male>Male <input type="radio" id="r2" name="gender" value=Female>Female</td></tr>
-<tr><td>Games Played</td><td>
-<select name="games" id="s1" ><option value=''>Select One</option>
-<option value=Football>FootBall</option>
-<option value=Tenis>Tenis</option>
-<option value=cricket>Cricket</option>
-</select>
-</td></tr>
-<tr><td>Terms & Condition</td><td><input type=checkbox name=agree value=yes id=c1></td></tr>
-</table>
-
-<input type="submit" id="btnSignUp" value="Sign Up!!" /> <input type=reset id=btnReset value=Reset>
-</form>
-
-</div><div class='col-md-6'>   <div id=my_msg>Button is disabled</div>
-    <form class="row g-3 justify-content-between" action="/crea_bolla" method="GET" onsubmit="return valthisform()">
+    <form class="row g-3" action="/crea_bolla" method="POST" onsubmit="return valthisform()">
         <h5>Tagli da Bollare</h5>
-        <div class="col-auto">
+        <div class="col-auto d-print-none">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="inputGroup">Bolla n.</span>
                 <input type="text" id="input_bolla" name="numero" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup">
             </div>
         </div>
-        <div class="col-auto">
+        <div class="col-auto d-print-none">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="inputGroup">Data:</span>
+                <input type="text" id="input_data" name="data" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup" value="{{data}}">
+            </div>
+        </div>
+        <div class="col-auto d-print-none">
             <button type="submit" class="btn btn-success" id="btn_submit">Crea Bolla</button>
         </div>
         <table class="table table-sm table-hover text-center table-responsive" style="font-size: 14px">

@@ -22,74 +22,39 @@ function valcheckboxes()
 
 function formValidation()
     {
-        var t1ck=true;
+        var enable_submit=true;
         var msg=" ";
         if(!(valcheckboxes()))
-            {
-                t1ck=false;
-                msg = msg + "non hai checkbox attive<br>";
-            }
+            {enable_submit=false;}
         if(isNaN(document.getElementById("input_bolla").value) || document.getElementById("input_bolla").value.length<1)
-            {
-                t1ck=false;
-                msg = msg + "non è un numero<br>";
-            }
-        if(document.getElementById("t1").value.length < 3 )
-            {
-                t1ck=false;
-                msg = msg + "Your name should be minimun 3 char length<br>";
-            }
-        if(!document.getElementById("r1").checked && !document.getElementById("r2").checked)
-            {
-                t1ck=false;
-                msg = msg + " Select your Gender<br>";
-            }
-        if(document.getElementById("s1").value.length < 3 )
-            {
-                t1ck=false;
-                msg = msg + " Select one of the games <br>";
-            }
-        if(!document.getElementById("c1").checked )
-            {
-                t1ck=false;
-                msg = msg + " You must agree to terms & conditions<br> ";
-            }
-        //alert(msg + t1ck);
-        if(t1ck)
+            {enable_submit=false;}
+        if(isNaN(Date.parse(document.getElementById("input_data").value)) || document.getElementById("input_data").value.length<1)
+            {enable_submit=false;}
+        if(enable_submit)
             {
                 document.getElementById("btn_submit").disabled = false;
-                msg=msg+ " <b> Submit Button is enabled </b>";
+                document.getElementById("btn_submit").className = "btn btn-success";
             }
         else
             {
                 document.getElementById("btn_submit").disabled = true;
-                msg=msg+ " <b> Submit Button is disabled </b>";
+                document.getElementById("btn_submit").className = "btn btn-secondary";
             }
-            // end of if checking status of t1ck variable
-            document.getElementById('my_msg').innerHTML=msg;
-}
-
-function resetForm(){
-document.getElementById("btn_submit").disabled = true;
-var frmMain = document.forms[0];
-frmMain.reset();
-}
+    }
 
 window.onload = function ()
                     {
+                        var enable_submit=false;
                         var btn_submit = document.getElementById("btn_submit");
-                        var btnReset = document.getElementById("btnReset");
-                        var t1 = document.getElementById("t1");
-                        var r1 = document.getElementById("r1");
-                        var r2 = document.getElementById("r2");
-                        var s1=document.getElementById("s1");
-                        var c1=document.getElementById("c1");
-                        var t1ck=false;
-                        document.getElementById("btn_submit").disabled = true;
-                        t1.onkeyup = formValidation;
-                        r1.onclick = formValidation;
-                        r2.onclick = formValidation;
-                        s1.onclick = formValidation;
-                        c1.onclick = formValidation;
-                        btnReset.onclick = resetForm;
+                        var bolla = document.getElementById("input_bolla");
+                        var checkboxs = document.getElementsByName("mycheck");
+                        var data = document.getElementById("input_data")
+                        btn_submit.disabled = true
+                        btn_submit.className = "btn btn-secondary"
+                        bolla.onkeyup = formValidation;
+                        data.onkeyup = formValidation;
+                        for(var i=0,l=checkboxs.length;i<l;i++)
+                            {
+                                checkboxs[i].onclick = formValidation;
+                            }
                     }

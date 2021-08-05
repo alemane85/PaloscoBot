@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}PaloscoWeb 2.0{% endblock %}
+{% block content %}
+<div class="container">
+    <h5>Bolla n. {{bolla}} del {{data_bolla}}</h5>
+    <table class="table table-sm table-hover text-center table-responsive" style="font-size: 14px">
+        <colgroup>
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-1">
+         <col class="col-md-3">
+     </colgroup>
+        <thead class="table-light">
+            <tr>
+                <th data-toggle="collapse" data-target=".multi-collapse" role="button" class="clickable collapsed d-print-none">
+                    <span class="if-collapsed">+</span>
+                    <span class="if-not-collapsed">-</span>
+                </th>{% for field in fields %}
+                <th>{{field}}</th>{% endfor %}
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>{% for index,row in enum_rows %}
+            <tr>
+                <td data-toggle="collapse" data-target="#accordion{{index}}" role="button" class="clickable collapsed d-print-none">
+                    <span class="if-collapsed">+</span>
+                    <span class="if-not-collapsed">-</span>
+                </td>{% for element in row %}
+                <td>
+                    {{element}}
+                </td>{% endfor %}
+                <td></td>
+            </tr>
+            <tr id="accordion{{index}}" class="collapse multi-collapse">
+                <td colspan="12">
+                    <table class="table table-sm text-center table-responsive" style="font-size: 12px">
+                        <colgroup>
+                         <col class="col-md-1">
+                         <col class="col-md-1">
+                         <col class="col-md-1">
+                         <col class="col-md-1">
+                         <col class="col-md-1">
+                         <col class="col-md-7">
+                     </colgroup>
+                        <thead class="table-light">
+                            <tr>
+                                <th class="d-print-none"></th>
+                                <th class="d-print-none"></th>
+                                {% for sub_field in sub_fields %}
+                                <th>{{sub_field}}</th>
+                                {% endfor %}
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sub_row in sub_tabs[index] %}
+                            <tr>
+                                <td class="d-print-none"></td>
+                                <td class="d-print-none"></td>
+                                {% for sub_element in sub_row %}
+                                <td>{{sub_element}}</td>
+                                {% endfor %}
+                                <td></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
