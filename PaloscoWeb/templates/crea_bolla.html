@@ -1,11 +1,16 @@
 {% extends "base.html" %}
-{% block title %}PaloscoWeb 2.0{% endblock %}
 {% block content %}
 <div class="container">
+    <div class="container">
+        <div class="container">
+          <header class="d-flex flex-wrap py-3 mb-4 border-bottom">
+            <h5 class="d-flex mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+                Bolla n. {{bolla}} del {{data_bolla}}
+            </h5>
+        </div>
     <div class="alert alert-success" role="alert">
         Bolla creata con successo!
     </div>
-    <h5>Bolla n. {{bolla}} del {{data_bolla}}</h5>
     <table class="table table-sm table-hover text-center table-responsive" style="font-size: 14px">
         <colgroup>
          <col class="col-md-1">

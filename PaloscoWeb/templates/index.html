@@ -1,20 +1,24 @@
 {% extends "base.html" %}
-{% block title %}PaloscoWeb 2.0{% endblock %}
 {% block content %}
 <div class="container">
-    <h5>Tagli da Bollare</h5>
+    <div class="container">
+      <header class="d-flex flex-wrap py-3 mb-4 border-bottom">
+        <h5 class="d-flex mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            Tagli da Bollare
+        </h5>
+    </div>
 {% if not empty %}
     <form class="row g-3" action="/crea_bolla" method="POST" onsubmit="return valthisform()">
         <div class="col-auto d-print-none">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="inputGroup">Bolla n.</span>
-                <input type="text" id="input_bolla" name="numero" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup">
+                <input type="text" id="input_bolla" name="numero" class="form-control" aria-label="Bolla" aria-describedby="inputGroup">
             </div>
         </div>
         <div class="col-auto d-print-none">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="inputGroup">Data:</span>
-                <input type="text" id="input_data" name="data" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup" value="{{data}}">
+                <input type="text" id="input_data" name="data" class="form-control" aria-label="Data" aria-describedby="inputGroup" value="{{data}}">
             </div>
         </div>
         <div class="col-auto d-print-none">
