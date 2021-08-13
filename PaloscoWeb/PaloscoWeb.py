@@ -1,5 +1,3 @@
-from MyCsv import MyCsvFile
-from MyTab import MyTab
 from flask import Flask, render_template, request
 import webbrowser
 import os
@@ -15,6 +13,8 @@ mylib_path = f"{upper_path}/lib"
 sys.path.append(mylib_path)
 
 # MY OWN MODULE IMPORTS
+from MyCsv import MyCsvFile
+from MyTab import MyTab
 
 # SET CUTTING ROUTINES FILES
 in_cut_file = f"{mydb_path}/TAGLI.txt"

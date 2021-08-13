@@ -1,3 +1,0 @@
-password=ok
-bottoken=1892091599:AAHDVIGEQG7I_lEPguf9guS2JXiJ3vAY2Z0
-ngroktoken=1vzvvvCJrWdWdzWulTpJaG33egC_4z5LUDUKpfT13YcyETcEn
